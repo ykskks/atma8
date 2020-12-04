@@ -1,0 +1,81 @@
+logs/exp000.log
+----------------------------------------------------------------------------------------------------
+Fold 1
+[100]	training's rmse: 1.07211	valid_1's rmse: 1.12182
+[200]	training's rmse: 0.974236	valid_1's rmse: 1.09152
+[300]	training's rmse: 0.931662	valid_1's rmse: 1.07192
+[400]	training's rmse: 0.905856	valid_1's rmse: 1.0567
+[500]	training's rmse: 0.888582	valid_1's rmse: 1.04755
+[600]	training's rmse: 0.874483	valid_1's rmse: 1.04197
+[700]	training's rmse: 0.862444	valid_1's rmse: 1.03927
+[800]	training's rmse: 0.852277	valid_1's rmse: 1.03625
+[900]	training's rmse: 0.843201	valid_1's rmse: 1.03478
+[1000]	training's rmse: 0.835343	valid_1's rmse: 1.03377
+[1100]	training's rmse: 0.828591	valid_1's rmse: 1.0323
+[1200]	training's rmse: 0.822154	valid_1's rmse: 1.03214
+[1300]	training's rmse: 0.815973	valid_1's rmse: 1.03114
+[1400]	training's rmse: 0.810192	valid_1's rmse: 1.03039
+[1500]	training's rmse: 0.80488	valid_1's rmse: 1.03054
+----------------------------------------------------------------------------------------------------
+Fold 2
+[100]	training's rmse: 1.02196	valid_1's rmse: 1.4114
+[200]	training's rmse: 0.932522	valid_1's rmse: 1.31133
+[300]	training's rmse: 0.891419	valid_1's rmse: 1.2664
+[400]	training's rmse: 0.867594	valid_1's rmse: 1.24443
+[500]	training's rmse: 0.850694	valid_1's rmse: 1.23101
+[600]	training's rmse: 0.837309	valid_1's rmse: 1.22304
+[700]	training's rmse: 0.826518	valid_1's rmse: 1.21767
+[800]	training's rmse: 0.817118	valid_1's rmse: 1.21474
+[900]	training's rmse: 0.80804	valid_1's rmse: 1.21427
+[1000]	training's rmse: 0.80072	valid_1's rmse: 1.21303
+[1100]	training's rmse: 0.793657	valid_1's rmse: 1.21142
+----------------------------------------------------------------------------------------------------
+Fold 3
+[100]	training's rmse: 1.08218	valid_1's rmse: 1.14212
+[200]	training's rmse: 0.984344	valid_1's rmse: 1.08438
+[300]	training's rmse: 0.938715	valid_1's rmse: 1.06124
+[400]	training's rmse: 0.910574	valid_1's rmse: 1.04837
+[500]	training's rmse: 0.890695	valid_1's rmse: 1.04345
+[600]	training's rmse: 0.875563	valid_1's rmse: 1.04159
+[700]	training's rmse: 0.863055	valid_1's rmse: 1.03928
+[800]	training's rmse: 0.851974	valid_1's rmse: 1.03806
+[900]	training's rmse: 0.842655	valid_1's rmse: 1.03618
+[1000]	training's rmse: 0.834444	valid_1's rmse: 1.03305
+[1100]	training's rmse: 0.826823	valid_1's rmse: 1.03378
+----------------------------------------------------------------------------------------------------
+Fold 4
+[100]	training's rmse: 1.08807	valid_1's rmse: 1.12045
+[200]	training's rmse: 0.983348	valid_1's rmse: 1.0663
+[300]	training's rmse: 0.937316	valid_1's rmse: 1.03859
+[400]	training's rmse: 0.909958	valid_1's rmse: 1.02178
+[500]	training's rmse: 0.890421	valid_1's rmse: 1.01248
+[600]	training's rmse: 0.874071	valid_1's rmse: 1.00884
+[700]	training's rmse: 0.86291	valid_1's rmse: 1.00661
+[800]	training's rmse: 0.852787	valid_1's rmse: 1.00588
+[900]	training's rmse: 0.843415	valid_1's rmse: 1.00534
+----------------------------------------------------------------------------------------------------
+Fold 5
+[100]	training's rmse: 1.07659	valid_1's rmse: 1.09511
+[200]	training's rmse: 0.97693	valid_1's rmse: 1.03708
+[300]	training's rmse: 0.934719	valid_1's rmse: 1.01355
+[400]	training's rmse: 0.907963	valid_1's rmse: 0.997031
+[500]	training's rmse: 0.889123	valid_1's rmse: 0.987211
+[600]	training's rmse: 0.873233	valid_1's rmse: 0.981893
+[700]	training's rmse: 0.860675	valid_1's rmse: 0.98006
+[800]	training's rmse: 0.850283	valid_1's rmse: 0.978797
+[900]	training's rmse: 0.841118	valid_1's rmse: 0.978879
+##### feature importance #####
+                   importance
+feature                      
+Publisher        90584.866855
+User_Count       52795.174782
+Year_of_Release  50892.090877
+Platform         34023.845447
+Critic_Count     23128.240382
+Name             16826.106209
+Developer        13610.865842
+Genre            12635.111886
+Critic_Score     12026.024002
+Rating            8082.729418
+User_Score        5883.286350
+cv_score_fold_mean: 1.051354443345577

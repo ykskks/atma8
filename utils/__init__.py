@@ -65,11 +65,11 @@ def seed_everything(seed=42):
 
 def load_datasets(feats, debug=False, n=1000):
     if debug:
-        train_feats = [feather.read_dataframe(f'features/{feat}_train.feather').head(n) for feat in feats]
-        test_feats = [feather.read_dataframe(f'features/{feat}_test.feather').head(n) for feat in feats]
+        train_feats = [feather.read_dataframe(f'./data/features/{feat}_train.feather').head(n) for feat in feats]
+        test_feats = [feather.read_dataframe(f'./data/features/{feat}_test.feather').head(n) for feat in feats]
     else:
-        train_feats = [feather.read_dataframe(f'features/{feat}_train.feather') for feat in feats]
-        test_feats = [feather.read_dataframe(f'features/{feat}_test.feather') for feat in feats]
+        train_feats = [feather.read_dataframe(f'./data/features/{feat}_train.feather') for feat in feats]
+        test_feats = [feather.read_dataframe(f'./data/features/{feat}_test.feather') for feat in feats]
 
     train = pd.concat(train_feats, axis=1)
     test = pd.concat(test_feats, axis=1)

@@ -2,13 +2,12 @@
     "model": "lgbm",
     "config": {
         "features": [
-            "Raw"
+            "Base"
         ],
-        "cv": "mcs",
+        "cv": "group",
         "params": {
-            "objective": "multiclass",
-            "metric": "multi_logloss",
-            "num_class": 31,
+            "objective": "root_mean_squared_error",
+            "metric": "root_mean_squared_error",
             "learning_rate": 0.01,
             "num_leaves": 50,
             "min_data_in_leaf": 100,
