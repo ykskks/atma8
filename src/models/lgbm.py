@@ -74,14 +74,14 @@ class Experiment:
         spsbm.to_csv(f"./submissions/{self.exp_id}_sub.csv", index=False)
 
     def track(self, cv_score):
-        track_experiment(self.exp_id, "model", self.model_type)
-        track_experiment(self.exp_id, "features", self.features)
-        track_experiment(self.exp_id, "cv", self.cv)
-        track_experiment(self.exp_id, "params", self.params)
+        # track_experiment(self.exp_id, "model", self.model_type)
+        # track_experiment(self.exp_id, "features", self.features)
+        # track_experiment(self.exp_id, "cv", self.cv)
+        # track_experiment(self.exp_id, "params", self.params)
         track_experiment(self.exp_id, "cv_score", cv_score)
 
     def run(self):
         X_train, X_test, y_train, groups = self.load_data()
         predictions, cv_score = self.fit_and_predict(X_train, X_test, y_train, groups)
         self.save(predictions)
-        # self.track(cv_score)
+        self.track(cv_score)
