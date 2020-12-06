@@ -253,6 +253,39 @@ class SumBert(Feature):
         self.test = test[gen_cols]
 
 
+class NameBert(Feature):
+    def create_features(self):
+        global train, test
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df[["Name_bert", "Publisher_bert", "Developer_bert"]] = pickle.load(open("./data/features/bert.pkl", mode="rb"))
+
+        name_bert = []
+
+        for i, b in enumerate(whole_df["Name_bert"].isnull().values):
+            if b:
+                name_bert.append([np.nan] * 768)
+            else:
+                name_bert.append(whole_df.loc[i, "Name_bert"].tolist())
+
+        name_bert = pd.DataFrame(name_bert)
+        name_bert.columns = [f"name_bert_{i}" for i in range(768)]
+
+        whole_df = pd.concat([whole_df, name_bert], axis=1)
+        del name_bert
+        gc.collect()
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+        del whole_df
+        gc.collect()
+
+        gen_cols = [f"name_bert_{i}" for i in range(768)]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 class Interaction(Feature):
     def create_features(self):
         global train, test
