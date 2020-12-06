@@ -24,7 +24,7 @@ class Experiment:
         self.model_type = model_type
 
     def load_data(self):
-        train = pd.read_csv("./data/raw/train.csv")
+        train = pd.read_csv("./data/raw/train_fixed.csv")
         X_train, X_test = load_datasets(self.features)
         train["Global_Sales_log1p"] = np.log1p(train["Global_Sales"])
         y_train = train["Global_Sales_log1p"].to_frame()

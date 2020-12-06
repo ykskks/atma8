@@ -88,6 +88,45 @@ class Base(Feature):
         self.test = test[gen_cols]
 
 
+class Base_2(Feature):
+    def create_features(self):
+        global train, test
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        def encode_category(df):
+            df_copy = df.copy()
+            le_cols = ["Platform", "Genre", "Rating"]
+            ce_cols = ["Name", "Publisher", "Developer"]
+
+            for col in le_cols:
+                series = df_copy[col]
+                df_copy[col] = careful_encode(series, "le")
+
+            for col in ce_cols:
+                series = df_copy[col]
+                df_copy[col] = careful_encode(series, "ce")
+
+            return df_copy
+
+        whole_df = encode_category(whole_df)
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        train["User_Score"] = train["User_Score"].replace("tbd", None)
+        test["User_Score"] = test["User_Score"].replace("tbd", None)
+        train["User_Score"] = train["User_Score"].astype(float)
+        test["User_Score"] = test["User_Score"].astype(float)
+
+        gen_cols = [
+            "Platform", "Genre", "Rating", "Name", "Publisher", "Developer", "Year_of_Release",
+            "Critic_Score", "Critic_Count", "User_Score", "User_Count"
+        ]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 class Bert(Feature):
     def create_features(self):
         global train, test
@@ -347,8 +386,8 @@ class Remake(Feature):
 
 
 if __name__ == '__main__':
-    TRAIN_PATH = Path("./data/raw/train.csv")
-    TEST_PATH = Path("./data/raw/test.csv")
+    TRAIN_PATH = Path("./data/raw/train_fixed.csv")
+    TEST_PATH = Path("./data/raw/test_fixed.csv")
 
     args = get_arguments()
 
