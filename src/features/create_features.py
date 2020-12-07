@@ -127,6 +127,50 @@ class Base_2(Feature):
         self.test = test[gen_cols]
 
 
+class Base_3(Feature):
+    def create_features(self):
+        global train, test
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        def encode_category(df):
+            df_copy = df.copy()
+            le_cols = ["Platform", "Genre", "Rating"]
+            ce_cols = ["Name", "Publisher", "Developer"]
+
+            for col in le_cols:
+                series = df_copy[col]
+                df_copy[col] = careful_encode(series, "le")
+
+            for col in ce_cols:
+                series = df_copy[col]
+                df_copy[col] = careful_encode(series, "ce")
+
+            return df_copy
+
+        whole_df = encode_category(whole_df)
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        train["User_Score"] = train["User_Score"].replace("tbd", None)
+        test["User_Score"] = test["User_Score"].replace("tbd", None)
+        train["User_Score"] = train["User_Score"].astype(float)
+        test["User_Score"] = test["User_Score"].astype(float)
+
+        # add
+        platform_year_mode = whole_df.groupby("Platform")["Year_of_Release"].agg(lambda x:x.value_counts().index[0])
+        whole_df.fillna(whole_df["Platform"].map(platform_year_mode), inplace=True)
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].astype(float)
+
+        gen_cols = [
+            "Platform", "Genre", "Rating", "Name", "Publisher", "Developer", "Year_of_Release",
+            "Critic_Score", "Critic_Count", "User_Score", "User_Count"
+        ]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 class Bert(Feature):
     def create_features(self):
         global train, test
