@@ -24,6 +24,7 @@ def careful_encode(series, encode_mode):
     series = series.copy()
     train_series = series[:len(train)]
     test_series = series[len(train):]
+    target = train["Global_Sales"]
     only_test_element = set(test_series.dropna()) - set(train_series.dropna())
     only_test_element_idx = series.isin(only_test_element)
 
@@ -44,6 +45,29 @@ def careful_encode(series, encode_mode):
         freq = series.value_counts()
         series = series.map(freq)
         series = series.astype(str)
+        series[nan_idx] = np.nan
+
+    elif encode_mode == "te":
+        nan_idx = series.isnull()
+        series.fillna("NaN", inplace=True)
+        from sklearn.model_selection import GroupKFold
+        folds = GroupKFold(n_splits=5)
+        groups = train["Publisher"].to_frame()
+        tmp = pd.concat([train_series, target], axis=1)
+        tmp.columns = ["col", "target"]
+        agg_df = tmp.groupby('col').agg({'target': ['sum', 'count']})
+        ts = pd.Series(np.empty(tmp.shape[0]), index=tmp.index)
+        for train_idx, val_idx in folds.split(tmp, groups=groups):
+            _, _val = tmp.iloc[train_idx], tmp.iloc[val_idx]
+            holdout_agg_df = _val.groupby('col').agg({'target': ['sum', 'count']})
+            train_agg_df = agg_df - holdout_agg_df
+            oof_ts = _val.apply(lambda row: train_agg_df.loc[row.col][('target', 'sum')] / (train_agg_df.loc[row.col][('target', 'count')] + 1), axis=1)
+            ts[oof_ts.index] = oof_ts
+
+        train_agg_df = tmp.groupby('col').agg({'target': ['mean']})
+        train_agg_df.columns = ["mean"]
+        test_te = test_series.apply(lambda row: train_agg_df.loc[row]["mean"] if row != "NaN" else np.nan)
+        series = pd.concat([ts, test_te], axis=0)
         series[nan_idx] = np.nan
 
     return series.astype(float)
@@ -166,6 +190,148 @@ class Base_3(Feature):
             "Platform", "Genre", "Rating", "Name", "Publisher", "Developer", "Year_of_Release",
             "Critic_Score", "Critic_Count", "User_Score", "User_Count"
         ]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class Base_4(Feature):
+    def create_features(self):
+        global train, test
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        def encode_category(df):
+            df_copy = df.copy()
+            te_cols = ["Platform", "Genre", "Rating"]
+            ce_cols = ["Name", "Publisher", "Developer"]
+
+            for col in te_cols:
+                series = df_copy[col]
+                df_copy[col] = careful_encode(series, "te")
+
+            for col in ce_cols:
+                series = df_copy[col]
+                df_copy[col] = careful_encode(series, "ce")
+
+            return df_copy
+
+        whole_df = encode_category(whole_df)
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        train["User_Score"] = train["User_Score"].replace("tbd", None)
+        test["User_Score"] = test["User_Score"].replace("tbd", None)
+        train["User_Score"] = train["User_Score"].astype(float)
+        test["User_Score"] = test["User_Score"].astype(float)
+
+        # add
+        platform_year_mode = whole_df.groupby("Platform")["Year_of_Release"].agg(lambda x:x.value_counts().index[0])
+        whole_df.fillna(whole_df["Platform"].map(platform_year_mode), inplace=True)
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].astype(float)
+
+        gen_cols = [
+            "Platform", "Genre", "Rating", "Name", "Publisher", "Developer", "Year_of_Release",
+            "Critic_Score", "Critic_Count", "User_Score", "User_Count"
+        ]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class Base_5(Feature):
+    def create_features(self):
+        global train, test
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        ohe_col_names = []
+
+        def encode_category(df):
+            df_copy = df.copy()
+            ohe_cols = ["Platform", "Genre", "Rating"]
+            ce_cols = ["Name", "Publisher", "Developer"]
+
+            for col in ohe_cols:
+                series = df_copy[col]
+                tmp = pd.get_dummies(series, prefix=col)
+                df_copy[tmp.columns.tolist()] = tmp
+                ohe_col_names.extend(tmp.columns.tolist())
+
+            for col in ce_cols:
+                series = df_copy[col]
+                df_copy[col] = careful_encode(series, "ce")
+
+            return df_copy
+
+        whole_df = encode_category(whole_df)
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        train["User_Score"] = train["User_Score"].replace("tbd", None)
+        test["User_Score"] = test["User_Score"].replace("tbd", None)
+        train["User_Score"] = train["User_Score"].astype(float)
+        test["User_Score"] = test["User_Score"].astype(float)
+
+        # add
+        platform_year_mode = whole_df.groupby("Platform")["Year_of_Release"].agg(lambda x:x.value_counts().index[0])
+        whole_df.fillna(whole_df["Platform"].map(platform_year_mode), inplace=True)
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].astype(float)
+
+        gen_cols = [
+            "Name", "Publisher", "Developer", "Year_of_Release",
+            "Critic_Score", "Critic_Count", "User_Score", "User_Count"
+        ]
+        gen_cols.extend(ohe_col_names)
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class Base_6(Feature):
+    def create_features(self):
+        global train, test
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        ohe_col_names = []
+
+        def encode_category(df):
+            df_copy = df.copy()
+            ohe_cols = ["Platform", "Genre", "Rating"]
+            ce_cols = ["Name", "Developer"]
+
+            for col in ohe_cols:
+                series = df_copy[col]
+                tmp = pd.get_dummies(series, prefix=col)
+                df_copy[tmp.columns.tolist()] = tmp
+                ohe_col_names.extend(tmp.columns.tolist())
+
+            for col in ce_cols:
+                series = df_copy[col]
+                df_copy[col] = careful_encode(series, "ce")
+
+            return df_copy
+
+        whole_df = encode_category(whole_df)
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        train["User_Score"] = train["User_Score"].replace("tbd", None)
+        test["User_Score"] = test["User_Score"].replace("tbd", None)
+        train["User_Score"] = train["User_Score"].astype(float)
+        test["User_Score"] = test["User_Score"].astype(float)
+
+        # add
+        platform_year_mode = whole_df.groupby("Platform")["Year_of_Release"].agg(lambda x:x.value_counts().index[0])
+        whole_df.fillna(whole_df["Platform"].map(platform_year_mode), inplace=True)
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].astype(float)
+
+        gen_cols = [
+            "Name", "Developer", "Year_of_Release",
+            "Critic_Score", "Critic_Count", "User_Score", "User_Count"
+        ]
+        gen_cols.extend(ohe_col_names)
 
         self.train = train[gen_cols]
         self.test = test[gen_cols]
@@ -457,6 +623,126 @@ class Remake(Feature):
 
         train, test = whole_df[:len(train)], whole_df[len(train):]
         gen_cols = ["is_remake"]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class PublisherPCA(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        gen_cols = []
+
+        def pca(col):
+            from sklearn.decomposition import PCA
+            pivot = whole_df.pivot_table(index='Publisher', columns=col, values='Name', aggfunc='count').fillna(0)
+            pca = PCA(n_components=7)
+            transformed = pca.fit_transform(pivot)
+            transformed_df = pd.DataFrame(transformed, index=pivot.index)
+            transformed_df.columns = [f"publisher_{col}_pca_{i}" for i in range(7)]
+            return transformed_df.reset_index()
+
+        pca_cols = ["Platform", "Year_of_Release", "Genre", "Rating"]
+        for col in pca_cols:
+            ret = pca(col)
+            whole_df = whole_df.merge(ret, on="Publisher", how="left")
+            gen_cols.extend([col for col in ret if "pca" in col])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class DeveloperPCA(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        gen_cols = []
+
+        def pca(col):
+            from sklearn.decomposition import PCA
+            pivot = whole_df.pivot_table(index='Developer', columns=col, values='Name', aggfunc='count').fillna(0)
+            pca = PCA(n_components=7)
+            transformed = pca.fit_transform(pivot)
+            transformed_df = pd.DataFrame(transformed, index=pivot.index)
+            transformed_df.columns = [f"developer_{col}_pca_{i}" for i in range(7)]
+            return transformed_df.reset_index()
+
+        pca_cols = ["Platform", "Year_of_Release", "Genre", "Rating"]
+        for col in pca_cols:
+            ret = pca(col)
+            whole_df = whole_df.merge(ret, on="Developer", how="left")
+            gen_cols.extend([col for col in ret if "pca" in col])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class BertPCA(Feature):
+    def create_features(self):
+        global train, test
+        gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df[["Name_bert", "Publisher_bert", "Developer_bert"]] = pickle.load(open("./data/features/bert.pkl", mode="rb"))
+
+        name_bert, pub_bert, dev_bert = [], [], []
+
+        for i, b in enumerate(whole_df["Name_bert"].isnull().values):
+            if b:
+                name_bert.append([np.nan] * 768)
+            else:
+                name_bert.append(whole_df.loc[i, "Name_bert"].tolist())
+
+        for i, b in enumerate(whole_df["Publisher_bert"].isnull().values):
+            if b:
+                pub_bert.append([np.nan] * 768)
+            else:
+                pub_bert.append(whole_df.loc[i, "Publisher_bert"].tolist())
+
+        for i, b in enumerate(whole_df["Developer_bert"].isnull().values):
+            if b:
+                dev_bert.append([np.nan] * 768)
+            else:
+                dev_bert.append(whole_df.loc[i, "Developer_bert"].tolist())
+
+        name_bert = pd.DataFrame(name_bert)
+        name_bert.columns = [f"name_bert_{i}" for i in range(768)]
+        pub_bert = pd.DataFrame(pub_bert)
+        pub_bert.columns = [f"pub_bert_{i}" for i in range(768)]
+        dev_bert = pd.DataFrame(dev_bert)
+        dev_bert.columns = [f"dev_bert_{i}" for i in range(768)]
+
+        def pca(x, col_name):
+            from sklearn.decomposition import PCA
+            pca = PCA(n_components=30)
+            nonnull_idx = (x.isnull().sum(axis=1) == 0)
+            transformed = pca.fit_transform(x.loc[nonnull_idx])
+            new_cols = [f"{col_name}_bert_pca_{i}" for i in range(30)]
+            x[new_cols] = np.nan
+            x.loc[nonnull_idx, new_cols] = transformed
+            transformed_df = x[new_cols].copy()
+            return transformed_df
+
+        name_bert_pca = pca(name_bert, "name")
+        pub_bert_pca = pca(pub_bert, "pub")
+        dev_bert_pca = pca(dev_bert, "dev")
+
+        del name_bert, pub_bert, dev_bert
+        import gc; gc.collect()
+
+        gen_cols.extend(name_bert_pca.columns.tolist())
+        gen_cols.extend(pub_bert_pca.columns.tolist())
+        gen_cols.extend(dev_bert_pca.columns.tolist())
+
+        whole_df = pd.concat([whole_df, name_bert_pca, pub_bert_pca, dev_bert_pca], axis=1)
+        train, test = whole_df[:len(train)], whole_df[len(train):]
 
         self.train = train[gen_cols]
         self.test = test[gen_cols]
