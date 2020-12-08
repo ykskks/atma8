@@ -748,6 +748,137 @@ class BertPCA(Feature):
         self.test = test[gen_cols]
 
 
+class BertPCA50(Feature):
+    def create_features(self):
+        global train, test
+        gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df[["Name_bert", "Publisher_bert", "Developer_bert"]] = pickle.load(open("./data/features/bert.pkl", mode="rb"))
+
+        name_bert, pub_bert, dev_bert = [], [], []
+
+        for i, b in enumerate(whole_df["Name_bert"].isnull().values):
+            if b:
+                name_bert.append([np.nan] * 768)
+            else:
+                name_bert.append(whole_df.loc[i, "Name_bert"].tolist())
+
+        for i, b in enumerate(whole_df["Publisher_bert"].isnull().values):
+            if b:
+                pub_bert.append([np.nan] * 768)
+            else:
+                pub_bert.append(whole_df.loc[i, "Publisher_bert"].tolist())
+
+        for i, b in enumerate(whole_df["Developer_bert"].isnull().values):
+            if b:
+                dev_bert.append([np.nan] * 768)
+            else:
+                dev_bert.append(whole_df.loc[i, "Developer_bert"].tolist())
+
+        name_bert = pd.DataFrame(name_bert)
+        name_bert.columns = [f"name_bert_{i}" for i in range(768)]
+        pub_bert = pd.DataFrame(pub_bert)
+        pub_bert.columns = [f"pub_bert_{i}" for i in range(768)]
+        dev_bert = pd.DataFrame(dev_bert)
+        dev_bert.columns = [f"dev_bert_{i}" for i in range(768)]
+
+        def pca(x, col_name):
+            from sklearn.decomposition import PCA
+            pca = PCA(n_components=50)
+            nonnull_idx = (x.isnull().sum(axis=1) == 0)
+            transformed = pca.fit_transform(x.loc[nonnull_idx])
+            new_cols = [f"{col_name}_bert_pca_{i}" for i in range(50)]
+            x[new_cols] = np.nan
+            x.loc[nonnull_idx, new_cols] = transformed
+            transformed_df = x[new_cols].copy()
+            return transformed_df
+
+        name_bert_pca = pca(name_bert, "name")
+        pub_bert_pca = pca(pub_bert, "pub")
+        dev_bert_pca = pca(dev_bert, "dev")
+
+        del name_bert, pub_bert, dev_bert
+        import gc; gc.collect()
+
+        gen_cols.extend(name_bert_pca.columns.tolist())
+        gen_cols.extend(pub_bert_pca.columns.tolist())
+        gen_cols.extend(dev_bert_pca.columns.tolist())
+
+        whole_df = pd.concat([whole_df, name_bert_pca, pub_bert_pca, dev_bert_pca], axis=1)
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class BertTSNE(Feature):
+    def create_features(self):
+        global train, test
+        gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df[["Name_bert", "Publisher_bert", "Developer_bert"]] = pickle.load(open("./data/features/bert.pkl", mode="rb"))
+
+        name_bert, pub_bert, dev_bert = [], [], []
+
+        for i, b in enumerate(whole_df["Name_bert"].isnull().values):
+            if b:
+                name_bert.append([np.nan] * 768)
+            else:
+                name_bert.append(whole_df.loc[i, "Name_bert"].tolist())
+
+        for i, b in enumerate(whole_df["Publisher_bert"].isnull().values):
+            if b:
+                pub_bert.append([np.nan] * 768)
+            else:
+                pub_bert.append(whole_df.loc[i, "Publisher_bert"].tolist())
+
+        for i, b in enumerate(whole_df["Developer_bert"].isnull().values):
+            if b:
+                dev_bert.append([np.nan] * 768)
+            else:
+                dev_bert.append(whole_df.loc[i, "Developer_bert"].tolist())
+
+        name_bert = pd.DataFrame(name_bert)
+        name_bert.columns = [f"name_bert_{i}" for i in range(768)]
+        pub_bert = pd.DataFrame(pub_bert)
+        pub_bert.columns = [f"pub_bert_{i}" for i in range(768)]
+        dev_bert = pd.DataFrame(dev_bert)
+        dev_bert.columns = [f"dev_bert_{i}" for i in range(768)]
+
+        def tsne(x, col_name):
+            from sklearn.decomposition import PCA
+            from sklearn.manifold import TSNE
+            pca = PCA(n_components=50)
+            tsne = TSNE(n_components=3, perplexity=10, random_state=42)
+            nonnull_idx = (x.isnull().sum(axis=1) == 0)
+            X = pca.fit_transform(x.loc[nonnull_idx])  # pca before tsne reccomened in sklearn doc
+            transformed = tsne.fit_transform(X)
+            new_cols = [f"{col_name}_bert_tsne_{i}" for i in range(3)]
+            x[new_cols] = np.nan
+            x.loc[nonnull_idx, new_cols] = transformed
+            transformed_df = x[new_cols].copy()
+            return transformed_df
+
+        name_bert_tsne = tsne(name_bert, "name")
+        pub_bert_tsne = tsne(pub_bert, "pub")
+        dev_bert_tsne = tsne(dev_bert, "dev")
+
+        del name_bert, pub_bert, dev_bert
+        import gc; gc.collect()
+
+        gen_cols.extend(name_bert_tsne.columns.tolist())
+        gen_cols.extend(pub_bert_tsne.columns.tolist())
+        gen_cols.extend(dev_bert_tsne.columns.tolist())
+
+        whole_df = pd.concat([whole_df, name_bert_tsne, pub_bert_tsne, dev_bert_tsne], axis=1)
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 if __name__ == '__main__':
     TRAIN_PATH = Path("./data/raw/train_fixed.csv")
     TEST_PATH = Path("./data/raw/test_fixed.csv")

@@ -68,6 +68,41 @@ class Experiment:
         self.logger.debug(f"cv_score_fold_mean: {cv_score_fold_mean}")
         return predictions, cv_score_fold_mean
 
+    # def correct_predictions(self, predictions):
+    #     train = pd.read_csv("./data/raw/train_fixed.csv")
+    #     test = pd.read_csv("./data/raw/test_fixed.csv")
+    #     whole_df = pd.concat([train, test], ignore_index=True)
+    #     train_test_name_intersections = set(train["Name"]).intersection(set(test["Name"]))
+    #     correct_idx = test.index[test["Name"].isin(train_test_name_intersections)]
+    #     platform_sales_medians = whole_df.groupby("Platform")["Global_Sales"].median()
+    #     year_sales_medians = whole_df.groupby("Year_of_Release")["Global_Sales"].median()
+
+    #     def manually_correct_prediction(test_idx):
+    #         same_title = test.loc[test_idx, "Name"]
+    #         base_pred = train[train["Name"] == same_title].iloc[0]["Global_Sales"]  # 複数あれば一個
+    #         base_platform = train[train["Name"] == same_title].iloc[0]["Platform"]
+    #         base_year = train[train["Name"] == same_title].iloc[0]["Year_of_Release"]
+
+    #         test_platform = test.loc[test_idx, "Platform"]
+    #         test_year = test.loc[test_idx, "Year_of_Release"]
+
+    #         if pd.isnull(base_platform) or pd.isnull(base_year):
+    #             return predictions[test_idx]  # base_pred  # or np.nan
+
+    #         if pd.isnull(test_platform) or pd.isnull(test_year):
+    #             return predictions[test_idx]  # base_pred  # or np.nan
+
+    #         # platform
+    #         base_pred *= platform_sales_medians[test_platform] / platform_sales_medians[base_platform]
+
+    #         # year
+    #         base_pred *= year_sales_medians[test_year] / year_sales_medians[base_year]
+    #         return base_pred
+
+    #     for i in correct_idx:
+    #         predictions[i] = manually_correct_prediction(i)
+    #     return predictions
+
     def save(self, predictions):
         spsbm = pd.read_csv("./data/raw/atmaCup8_sample-submission.csv")
         spsbm["Global_Sales"] = predictions
@@ -83,5 +118,6 @@ class Experiment:
     def run(self):
         X_train, X_test, y_train, groups = self.load_data()
         predictions, cv_score = self.fit_and_predict(X_train, X_test, y_train, groups)
+        # predictions = self.correct_predictions(predictions)
         self.save(predictions)
         self.track(cv_score)
