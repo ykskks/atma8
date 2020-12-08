@@ -2,7 +2,7 @@
 import sys
 
 from mcs_kfold import MCSKFold
-from sklearn.model_selection import GroupKFold
+from sklearn.model_selection import GroupKFold, StratifiedKFold
 from sklearn.metrics import mean_squared_log_error
 import lightgbm as lgb
 import numpy as np
@@ -35,14 +35,18 @@ class Experiment:
         if self.cv == "mcs":
             folds = MCSKFold(n_splits=5, shuffle_mc=True, max_iter=100)
         elif self.cv == "group":
-            folds = GroupKFold(n_splits=5)
+            folds = GroupKFold(n_splits=10)
+        elif self.cv == "stratified":
+            folds = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+            y_to_stratify = pd.cut(y_train["Global_Sales_log1p"], bins=7, labels=False)
 
         oof = np.zeros(len(X_train))
         predictions = np.zeros(len(X_test))
         feature_importance_df = pd.DataFrame()
         fold_scores = []
 
-        for fold, (train_idx, val_idx) in enumerate(folds.split(X_train, groups=groups)):
+        # for fold, (train_idx, val_idx) in enumerate(folds.split(X_train, groups=groups)):
+        for fold, (train_idx, val_idx) in enumerate(folds.split(X_train, y_to_stratify)):
             self.logger.debug("-" * 100)
             self.logger.debug(f"Fold {fold+1}")
             train_data = lgb.Dataset(X_train.iloc[train_idx], label=y_train.iloc[train_idx])
