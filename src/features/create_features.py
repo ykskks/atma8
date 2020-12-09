@@ -980,6 +980,157 @@ class Series(Feature):
         self.test = test[gen_cols]
 
 
+class NumSeries(Feature):
+    def create_features(self):
+        global train, test
+
+        import texthero as hero
+        from texthero import preprocessing
+        from nltk.util import ngrams
+
+        gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        custom_pipeline = [preprocessing.fillna
+                        , preprocessing.lowercase
+                        , preprocessing.remove_digits
+                        , preprocessing.remove_punctuation
+                        , preprocessing.remove_diacritics
+                        , preprocessing.remove_whitespace
+                        , preprocessing.remove_stopwords
+                        ]
+
+        # 連続2単語と3単語で頻出するやつをseriesとする
+        def line_ngram(line):
+            words = [w for w in line.split(' ') if len(w) != 0] # 空文字は取り除く
+            return list(ngrams(words, 2)) + list(ngrams(words, 3))
+
+        names = hero.clean(whole_df['Name'], custom_pipeline)
+        name_grams = names.map(line_ngram)
+
+        grams = [x for row in name_grams for x in row if len(x) > 0]
+        top_grams = pd.Series(grams).value_counts().head(10000).sort_values(ascending=True)
+
+        # 昇順なのでそのタイトルに含まれる最も出現頻度の高いシリーズがそのタイトルの値となる
+        # n-gramのnの値については要検討
+        whole_df["num_series"] = 0
+        gen_cols.append("num_series")
+        for g, n in tqdm(top_grams.items()):
+            idx = name_grams.map(lambda x: g in x)
+            whole_df.loc[idx, "num_series"] = n
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class NumSeriesNormalized(Feature):
+    def create_features(self):
+        global train, test
+
+        import texthero as hero
+        from texthero import preprocessing
+        from nltk.util import ngrams
+
+        gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        custom_pipeline = [preprocessing.fillna
+                        , preprocessing.lowercase
+                        , preprocessing.remove_digits
+                        , preprocessing.remove_punctuation
+                        , preprocessing.remove_diacritics
+                        , preprocessing.remove_whitespace
+                        , preprocessing.remove_stopwords
+                        ]
+
+        # 連続2単語と3単語で頻出するやつをseriesとする
+        def line_ngram(line):
+            words = [w for w in line.split(' ') if len(w) != 0] # 空文字は取り除く
+            return list(ngrams(words, 2)) + list(ngrams(words, 3))
+
+        # https://stackoverflow.com/questions/15450192/fastest-way-to-compute-entropy-in-python
+        import scipy.stats
+
+        def ent(data):
+            """Calculates entropy of the passed `pd.Series`
+            """
+            p_data = data.value_counts()           # counts occurrence of each value
+            entropy = scipy.stats.entropy(p_data)  # get entropy from counts
+            return entropy
+
+        names = hero.clean(whole_df['Name'], custom_pipeline)
+        name_grams = names.map(line_ngram)
+
+        grams = [x for row in name_grams for x in row if len(x) > 0]
+        top_grams = pd.Series(grams).value_counts().head(10000).sort_values(ascending=True)
+
+        # 昇順なのでそのタイトルに含まれる最も出現頻度の高いシリーズがそのタイトルの値となる
+        # n-gramのnの値については要検討
+        whole_df["num_series_norm"] = 0
+        gen_cols.append("num_series_norm")
+        for g, n in tqdm(top_grams.items()):
+            idx = name_grams.map(lambda x: g in x)
+            entropy = ent(whole_df.loc[idx, "Platform"])
+            whole_df.loc[idx, "num_series_norm"] = n / entropy
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class SeriesLifespan(Feature):
+    def create_features(self):
+        global train, test
+
+        import texthero as hero
+        from texthero import preprocessing
+        from nltk.util import ngrams
+
+        gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        custom_pipeline = [preprocessing.fillna
+                        , preprocessing.lowercase
+                        , preprocessing.remove_digits
+                        , preprocessing.remove_punctuation
+                        , preprocessing.remove_diacritics
+                        , preprocessing.remove_whitespace
+                        , preprocessing.remove_stopwords
+                        ]
+
+        # 連続2単語と3単語で頻出するやつをseriesとする
+        def line_ngram(line):
+            words = [w for w in line.split(' ') if len(w) != 0] # 空文字は取り除く
+            return list(ngrams(words, 2)) + list(ngrams(words, 3))
+
+        names = hero.clean(whole_df['Name'], custom_pipeline)
+        name_grams = names.map(line_ngram)
+
+        grams = [x for row in name_grams for x in row if len(x) > 0]
+        top_grams = pd.Series(grams).value_counts().head(10000).sort_values(ascending=True)
+
+        # 昇順なのでそのタイトルに含まれる最も出現頻度の高いシリーズがそのタイトルの値となる
+        # n-gramのnの値については要検討
+        whole_df["series_lifespan"] = 0
+        gen_cols.append("series_lifespan")
+        for g, n in tqdm(top_grams.items()):
+            idx = name_grams.map(lambda x: g in x)
+            tmp = whole_df.loc[idx]
+            lifespan = tmp["Year_of_Release"].max() - tmp["Year_of_Release"].min()
+            whole_df.loc[idx, "series_lifespan"] = lifespan
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 if __name__ == '__main__':
     TRAIN_PATH = Path("./data/raw/train_fixed.csv")
     TEST_PATH = Path("./data/raw/test_fixed.csv")
