@@ -583,6 +583,58 @@ class Momentum(Feature):
         self.test = test[gen_cols]
 
 
+class CriticUser(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["is_tbd"] = (whole_df["User_Score"] == "tbd").astype(int)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float) * 10
+
+        whole_df["Score_sub"] = whole_df["Critic_Score"] - whole_df["User_Score"]
+        whole_df["Score_div"] = whole_df["Critic_Score"] / whole_df["User_Score"]
+        whole_df['total_count'] = whole_df["Critic_Count"] + whole_df["User_Count"]
+        whole_df["Count_sub"] = whole_df["Critic_Count"] - whole_df["User_Count"]
+        whole_df["Count_div"] = whole_df["Critic_Count"] / whole_df["User_Count"]
+
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+        whole_df["Total_Momentum"] = whole_df["Critic_Momentum"] + whole_df["User_Momentum"]
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+        gen_cols = ["is_tbd", "Score_sub", "Score_div", "total_count", "Count_sub", "Count_div", "Total_Momentum"]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class CriticUser_2(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        # whole_df["is_tbd"] = (whole_df["User_Score"] == "tbd").astype(int)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float) * 10
+
+        # whole_df["Score_sub"] = whole_df["Critic_Score"] - whole_df["User_Score"]
+        # whole_df["Score_div"] = whole_df["Critic_Score"] / whole_df["User_Score"]
+        whole_df['total_count'] = whole_df["Critic_Count"] + whole_df["User_Count"]
+        # whole_df["Count_sub"] = whole_df["Critic_Count"] - whole_df["User_Count"]
+        # whole_df["Count_div"] = whole_df["Critic_Count"] / whole_df["User_Count"]
+
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+        whole_df["Total_Momentum"] = whole_df["Critic_Momentum"] + whole_df["User_Momentum"]
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+        gen_cols = ["total_count", "Total_Momentum"]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 class SimultaneousPlatformCount(Feature):
     def create_features(self):
         global train, test
@@ -634,6 +686,9 @@ class PublisherPCA(Feature):
 
         whole_df = pd.concat([train, test], ignore_index=True)
         gen_cols = []
+
+        # unknown -> nan
+        whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
 
         def pca(col):
             from sklearn.decomposition import PCA
@@ -783,6 +838,10 @@ class BertPCA50(Feature):
         dev_bert = pd.DataFrame(dev_bert)
         dev_bert.columns = [f"dev_bert_{i}" for i in range(768)]
 
+        # unknown -> nan
+        pub_unknown_idx = (whole_df["Publisher"] == "unknown")
+        pub_bert.loc[pub_unknown_idx] = np.nan
+
         def pca(x, col_name):
             from sklearn.decomposition import PCA
             pca = PCA(n_components=50)
@@ -873,6 +932,48 @@ class BertTSNE(Feature):
         gen_cols.extend(dev_bert_tsne.columns.tolist())
 
         whole_df = pd.concat([whole_df, name_bert_tsne, pub_bert_tsne, dev_bert_tsne], axis=1)
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class Series(Feature):
+    def create_features(self):
+        global train, test
+
+        import texthero as hero
+        from texthero import preprocessing
+        from nltk.util import ngrams
+
+        gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        custom_pipeline = [preprocessing.fillna
+                        , preprocessing.lowercase
+                        , preprocessing.remove_digits
+                        , preprocessing.remove_punctuation
+                        , preprocessing.remove_diacritics
+                        , preprocessing.remove_whitespace
+                        , preprocessing.remove_stopwords
+                        ]
+
+        def line_ngram(line, n=2):
+            words = [w for w in line.split(' ') if len(w) != 0] # 空文字は取り除く
+            return list(ngrams(words, n))
+
+        names = hero.clean(whole_df['Name'], custom_pipeline)
+        name_grams = names.map(line_ngram)
+
+        grams = [x for row in name_grams for x in row if len(x) > 0]
+        top_grams = pd.Series(grams).value_counts().head(50).index
+
+        for i, ng in enumerate(top_grams):
+            col_name = "_".join(ng)
+            whole_df[f"name_has_{col_name}"] = name_grams.map(lambda x: ng in x).astype(int)
+            gen_cols.append(f"name_has_{col_name}")
+
         train, test = whole_df[:len(train)], whole_df[len(train):]
 
         self.train = train[gen_cols]

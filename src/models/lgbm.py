@@ -26,6 +26,7 @@ class Experiment:
     def load_data(self):
         train = pd.read_csv("./data/raw/train_fixed.csv")
         X_train, X_test = load_datasets(self.features)
+        self.logger.debug(f"feature using: {self.features}")
         train["Global_Sales_log1p"] = np.log1p(train["Global_Sales"])
         y_train = train["Global_Sales_log1p"].to_frame()
         groups = train["Publisher"].to_frame()
