@@ -1131,9 +1131,100 @@ class SeriesLifespan(Feature):
         self.test = test[gen_cols]
 
 
+class SeriesRelative(Feature):
+    def create_features(self):
+        global train, test
+
+        import texthero as hero
+        from texthero import preprocessing
+        from nltk.util import ngrams
+
+        gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        custom_pipeline = [preprocessing.fillna
+                        , preprocessing.lowercase
+                        , preprocessing.remove_digits
+                        , preprocessing.remove_punctuation
+                        , preprocessing.remove_diacritics
+                        , preprocessing.remove_whitespace
+                        , preprocessing.remove_stopwords
+                        ]
+
+        # 連続2単語と3単語で頻出するやつをseriesとする
+        def line_ngram(line):
+            words = [w for w in line.split(' ') if len(w) != 0] # 空文字は取り除く
+            return list(ngrams(words, 2)) + list(ngrams(words, 3))
+
+        names = hero.clean(whole_df['Name'], custom_pipeline)
+        name_grams = names.map(line_ngram)
+
+        grams = [x for row in name_grams for x in row if len(x) > 0]
+        top_grams = pd.Series(grams).value_counts().head(10000).sort_values(ascending=True)
+
+        # 昇順なのでそのタイトルに含まれる最も出現頻度の高いシリーズがそのタイトルの値となる
+        # n-gramのnの値については要検討
+        cols = [
+            "user_score_relative_to_series_mean",
+            "critic_score_relative_to_series_mean",
+            "user_count_relative_to_series_mean",
+            "critic_count_relative_to_series_mean",
+            "user_mometum_relative_to_series_mean",
+            "critic_momentum_relative_to_series_mean"
+        ]
+        whole_df[cols] = np.nan
+        gen_cols.extend(cols)
+
+        for g, n in tqdm(top_grams.items()):
+            idx = name_grams.map(lambda x: g in x)
+            tmp = whole_df.loc[idx]
+
+            if len(tmp["User_Score"].dropna()) > 0:
+                mean = tmp["User_Score"].dropna().mean()
+                whole_df.loc[idx, "user_score_relative_to_series_mean"] = whole_df.loc[idx, "User_Score"] - mean
+
+            if len(tmp["Critic_Score"].dropna()) > 0:
+                mean = tmp["Critic_Score"].dropna().mean()
+                whole_df.loc[idx, "critic_score_relative_to_series_mean"] = whole_df.loc[idx, "Critic_Score"] - mean
+
+            if len(tmp["User_Count"].dropna()) > 0:
+                mean = tmp["User_Count"].dropna().mean()
+                whole_df.loc[idx, "user_count_relative_to_series_mean"] = whole_df.loc[idx, "User_Count"] - mean
+
+            if len(tmp["Critic_Count"].dropna()) > 0:
+                mean = tmp["Critic_Count"].dropna().mean()
+                whole_df.loc[idx, "critic_count_relative_to_series_mean"] = whole_df.loc[idx, "Critic_Count"] - mean
+
+            if len(tmp["User_Momentum"].dropna()) > 0:
+                mean = tmp["User_Momentum"].dropna().mean()
+                whole_df.loc[idx, "user_mometum_relative_to_series_mean"] = whole_df.loc[idx, "User_Momentum"] - mean
+
+            if len(tmp["Critic_Momentum"].dropna()) > 0:
+                mean = tmp["Critic_Momentum"].dropna().mean()
+                whole_df.loc[idx, "critic_momentum_relative_to_series_mean"] = whole_df.loc[idx, "Critic_Momentum"] - mean
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 if __name__ == '__main__':
+    # TRAIN_PATH = Path("./data/raw/train_fixed.csv")
+    # TEST_PATH = Path("./data/raw/test_fixed.csv")
+
+    # exp039
     TRAIN_PATH = Path("./data/raw/train_fixed.csv")
-    TEST_PATH = Path("./data/raw/test_fixed.csv")
+    TEST_PATH = Path("./data/raw/test_year_predicted.csv")
+
+    # exp040
+    # TRAIN_PATH = Path("./data/raw/train_year_predicted.csv")
+    # TEST_PATH = Path("./data/raw/test_year_predicted.csv")
 
     args = get_arguments()
 

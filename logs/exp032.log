@@ -1,0 +1,589 @@
+logs/exp032.log
+feature using: ['Base_6', 'BertPCA50', 'Momentum', 'Interaction', 'SimultaneousPlatformCount', 'PublisherPCA', 'DeveloperPCA', 'Series', 'NumSeries', 'NumSeriesNormalized', 'SeriesLifespan', 'SeriesRelative']
+----------------------------------------------------------------------------------------------------
+Fold 1
+[100]	training's rmse: 1.08446	valid_1's rmse: 1.08319
+[200]	training's rmse: 0.960814	valid_1's rmse: 0.976381
+[300]	training's rmse: 0.898014	valid_1's rmse: 0.927283
+[400]	training's rmse: 0.861811	valid_1's rmse: 0.903061
+[500]	training's rmse: 0.836102	valid_1's rmse: 0.88717
+[600]	training's rmse: 0.81549	valid_1's rmse: 0.8768
+[700]	training's rmse: 0.797011	valid_1's rmse: 0.869135
+[800]	training's rmse: 0.780796	valid_1's rmse: 0.863258
+[900]	training's rmse: 0.765657	valid_1's rmse: 0.858363
+[1000]	training's rmse: 0.751656	valid_1's rmse: 0.85357
+[1100]	training's rmse: 0.739327	valid_1's rmse: 0.849503
+[1200]	training's rmse: 0.727598	valid_1's rmse: 0.846463
+[1300]	training's rmse: 0.716237	valid_1's rmse: 0.84363
+[1400]	training's rmse: 0.705491	valid_1's rmse: 0.840585
+[1500]	training's rmse: 0.694956	valid_1's rmse: 0.838477
+[1600]	training's rmse: 0.685187	valid_1's rmse: 0.83641
+[1700]	training's rmse: 0.676159	valid_1's rmse: 0.834626
+[1800]	training's rmse: 0.667226	valid_1's rmse: 0.832499
+[1900]	training's rmse: 0.658804	valid_1's rmse: 0.830935
+[2000]	training's rmse: 0.650263	valid_1's rmse: 0.828635
+[2100]	training's rmse: 0.642216	valid_1's rmse: 0.827472
+[2200]	training's rmse: 0.63426	valid_1's rmse: 0.825712
+[2300]	training's rmse: 0.62653	valid_1's rmse: 0.824432
+[2400]	training's rmse: 0.618647	valid_1's rmse: 0.823566
+[2500]	training's rmse: 0.611355	valid_1's rmse: 0.821995
+[2600]	training's rmse: 0.604679	valid_1's rmse: 0.820714
+[2700]	training's rmse: 0.597674	valid_1's rmse: 0.819883
+[2800]	training's rmse: 0.591265	valid_1's rmse: 0.81934
+[2900]	training's rmse: 0.584377	valid_1's rmse: 0.818023
+[3000]	training's rmse: 0.577597	valid_1's rmse: 0.817168
+[3100]	training's rmse: 0.571134	valid_1's rmse: 0.816285
+[3200]	training's rmse: 0.564764	valid_1's rmse: 0.81536
+[3300]	training's rmse: 0.558557	valid_1's rmse: 0.814326
+[3400]	training's rmse: 0.552333	valid_1's rmse: 0.813969
+[3500]	training's rmse: 0.54619	valid_1's rmse: 0.813077
+[3600]	training's rmse: 0.540373	valid_1's rmse: 0.812469
+[3700]	training's rmse: 0.534689	valid_1's rmse: 0.811821
+[3800]	training's rmse: 0.529005	valid_1's rmse: 0.811005
+[3900]	training's rmse: 0.523591	valid_1's rmse: 0.809865
+[4000]	training's rmse: 0.517903	valid_1's rmse: 0.809034
+[4100]	training's rmse: 0.512367	valid_1's rmse: 0.807988
+[4200]	training's rmse: 0.507187	valid_1's rmse: 0.807526
+[4300]	training's rmse: 0.501907	valid_1's rmse: 0.807693
+----------------------------------------------------------------------------------------------------
+Fold 2
+[100]	training's rmse: 1.08321	valid_1's rmse: 1.09502
+[200]	training's rmse: 0.959396	valid_1's rmse: 0.978171
+[300]	training's rmse: 0.896968	valid_1's rmse: 0.928665
+[400]	training's rmse: 0.859395	valid_1's rmse: 0.902223
+[500]	training's rmse: 0.832807	valid_1's rmse: 0.886638
+[600]	training's rmse: 0.811136	valid_1's rmse: 0.877945
+[700]	training's rmse: 0.793281	valid_1's rmse: 0.872011
+[800]	training's rmse: 0.776976	valid_1's rmse: 0.867308
+[900]	training's rmse: 0.762129	valid_1's rmse: 0.864245
+[1000]	training's rmse: 0.7496	valid_1's rmse: 0.861366
+[1100]	training's rmse: 0.737042	valid_1's rmse: 0.858699
+[1200]	training's rmse: 0.725199	valid_1's rmse: 0.85703
+[1300]	training's rmse: 0.714292	valid_1's rmse: 0.855811
+[1400]	training's rmse: 0.70394	valid_1's rmse: 0.854975
+[1500]	training's rmse: 0.693547	valid_1's rmse: 0.853793
+[1600]	training's rmse: 0.684006	valid_1's rmse: 0.852462
+[1700]	training's rmse: 0.674707	valid_1's rmse: 0.852009
+[1800]	training's rmse: 0.665911	valid_1's rmse: 0.851023
+[1900]	training's rmse: 0.657297	valid_1's rmse: 0.849716
+[2000]	training's rmse: 0.648813	valid_1's rmse: 0.848691
+[2100]	training's rmse: 0.640399	valid_1's rmse: 0.847694
+[2200]	training's rmse: 0.63303	valid_1's rmse: 0.846976
+[2300]	training's rmse: 0.62465	valid_1's rmse: 0.84619
+[2400]	training's rmse: 0.617564	valid_1's rmse: 0.845283
+[2500]	training's rmse: 0.610587	valid_1's rmse: 0.844547
+[2600]	training's rmse: 0.602841	valid_1's rmse: 0.844032
+[2700]	training's rmse: 0.595177	valid_1's rmse: 0.843465
+[2800]	training's rmse: 0.588503	valid_1's rmse: 0.842857
+[2900]	training's rmse: 0.581647	valid_1's rmse: 0.84168
+[3000]	training's rmse: 0.575209	valid_1's rmse: 0.841474
+[3100]	training's rmse: 0.568475	valid_1's rmse: 0.841323
+[3200]	training's rmse: 0.562445	valid_1's rmse: 0.840849
+[3300]	training's rmse: 0.556395	valid_1's rmse: 0.840381
+[3400]	training's rmse: 0.550556	valid_1's rmse: 0.840388
+[3500]	training's rmse: 0.544657	valid_1's rmse: 0.839794
+[3600]	training's rmse: 0.538836	valid_1's rmse: 0.839733
+[3700]	training's rmse: 0.533328	valid_1's rmse: 0.838886
+[3800]	training's rmse: 0.528176	valid_1's rmse: 0.838151
+[3900]	training's rmse: 0.522413	valid_1's rmse: 0.837921
+[4000]	training's rmse: 0.517312	valid_1's rmse: 0.837401
+----------------------------------------------------------------------------------------------------
+Fold 3
+[100]	training's rmse: 1.08455	valid_1's rmse: 1.09397
+[200]	training's rmse: 0.961437	valid_1's rmse: 0.988121
+[300]	training's rmse: 0.898594	valid_1's rmse: 0.939158
+[400]	training's rmse: 0.862372	valid_1's rmse: 0.912013
+[500]	training's rmse: 0.836242	valid_1's rmse: 0.894243
+[600]	training's rmse: 0.815784	valid_1's rmse: 0.880389
+[700]	training's rmse: 0.798643	valid_1's rmse: 0.870784
+[800]	training's rmse: 0.7828	valid_1's rmse: 0.862006
+[900]	training's rmse: 0.768607	valid_1's rmse: 0.853787
+[1000]	training's rmse: 0.755376	valid_1's rmse: 0.846817
+[1100]	training's rmse: 0.743487	valid_1's rmse: 0.840826
+[1200]	training's rmse: 0.732655	valid_1's rmse: 0.834981
+[1300]	training's rmse: 0.722402	valid_1's rmse: 0.82955
+[1400]	training's rmse: 0.711764	valid_1's rmse: 0.82465
+[1500]	training's rmse: 0.702018	valid_1's rmse: 0.819769
+[1600]	training's rmse: 0.692416	valid_1's rmse: 0.815323
+[1700]	training's rmse: 0.683472	valid_1's rmse: 0.811407
+[1800]	training's rmse: 0.674987	valid_1's rmse: 0.807842
+[1900]	training's rmse: 0.666471	valid_1's rmse: 0.804819
+[2000]	training's rmse: 0.658304	valid_1's rmse: 0.801479
+[2100]	training's rmse: 0.649503	valid_1's rmse: 0.79822
+[2200]	training's rmse: 0.641865	valid_1's rmse: 0.795062
+[2300]	training's rmse: 0.634241	valid_1's rmse: 0.79276
+[2400]	training's rmse: 0.626611	valid_1's rmse: 0.790357
+[2500]	training's rmse: 0.619447	valid_1's rmse: 0.788138
+[2600]	training's rmse: 0.612146	valid_1's rmse: 0.785428
+[2700]	training's rmse: 0.604837	valid_1's rmse: 0.782939
+[2800]	training's rmse: 0.59763	valid_1's rmse: 0.780955
+[2900]	training's rmse: 0.591041	valid_1's rmse: 0.777983
+[3000]	training's rmse: 0.58429	valid_1's rmse: 0.77615
+[3100]	training's rmse: 0.577693	valid_1's rmse: 0.774291
+[3200]	training's rmse: 0.571102	valid_1's rmse: 0.773006
+[3300]	training's rmse: 0.564696	valid_1's rmse: 0.771279
+[3400]	training's rmse: 0.558955	valid_1's rmse: 0.769608
+[3500]	training's rmse: 0.552691	valid_1's rmse: 0.767932
+[3600]	training's rmse: 0.546739	valid_1's rmse: 0.76616
+[3700]	training's rmse: 0.541526	valid_1's rmse: 0.764089
+[3800]	training's rmse: 0.536032	valid_1's rmse: 0.762513
+[3900]	training's rmse: 0.530265	valid_1's rmse: 0.760636
+[4000]	training's rmse: 0.524336	valid_1's rmse: 0.759206
+[4100]	training's rmse: 0.519178	valid_1's rmse: 0.758059
+[4200]	training's rmse: 0.513893	valid_1's rmse: 0.756984
+[4300]	training's rmse: 0.508854	valid_1's rmse: 0.756087
+[4400]	training's rmse: 0.503947	valid_1's rmse: 0.755176
+[4500]	training's rmse: 0.498625	valid_1's rmse: 0.754146
+[4600]	training's rmse: 0.494001	valid_1's rmse: 0.753136
+[4700]	training's rmse: 0.489321	valid_1's rmse: 0.752047
+[4800]	training's rmse: 0.484691	valid_1's rmse: 0.750602
+[4900]	training's rmse: 0.480173	valid_1's rmse: 0.749848
+[5000]	training's rmse: 0.475655	valid_1's rmse: 0.748831
+[5100]	training's rmse: 0.471167	valid_1's rmse: 0.747826
+[5200]	training's rmse: 0.466791	valid_1's rmse: 0.746818
+[5300]	training's rmse: 0.462495	valid_1's rmse: 0.746295
+[5400]	training's rmse: 0.458498	valid_1's rmse: 0.745677
+[5500]	training's rmse: 0.454176	valid_1's rmse: 0.745188
+[5600]	training's rmse: 0.450001	valid_1's rmse: 0.744555
+[5700]	training's rmse: 0.446043	valid_1's rmse: 0.744171
+[5800]	training's rmse: 0.442322	valid_1's rmse: 0.743362
+[5900]	training's rmse: 0.43864	valid_1's rmse: 0.742737
+[6000]	training's rmse: 0.434715	valid_1's rmse: 0.742382
+[6100]	training's rmse: 0.430968	valid_1's rmse: 0.742115
+[6200]	training's rmse: 0.427269	valid_1's rmse: 0.741473
+[6300]	training's rmse: 0.423761	valid_1's rmse: 0.741324
+[6400]	training's rmse: 0.420159	valid_1's rmse: 0.740978
+[6500]	training's rmse: 0.416312	valid_1's rmse: 0.740159
+[6600]	training's rmse: 0.412614	valid_1's rmse: 0.73963
+[6700]	training's rmse: 0.40928	valid_1's rmse: 0.739319
+[6800]	training's rmse: 0.406025	valid_1's rmse: 0.738784
+[6900]	training's rmse: 0.402552	valid_1's rmse: 0.738493
+[7000]	training's rmse: 0.399257	valid_1's rmse: 0.738036
+[7100]	training's rmse: 0.395832	valid_1's rmse: 0.737441
+[7200]	training's rmse: 0.392672	valid_1's rmse: 0.737318
+[7300]	training's rmse: 0.389657	valid_1's rmse: 0.736839
+[7400]	training's rmse: 0.386667	valid_1's rmse: 0.736415
+[7500]	training's rmse: 0.383673	valid_1's rmse: 0.735901
+[7600]	training's rmse: 0.380673	valid_1's rmse: 0.73578
+[7700]	training's rmse: 0.377656	valid_1's rmse: 0.735684
+[7800]	training's rmse: 0.374813	valid_1's rmse: 0.735547
+[7900]	training's rmse: 0.37194	valid_1's rmse: 0.735448
+[8000]	training's rmse: 0.368887	valid_1's rmse: 0.73507
+[8100]	training's rmse: 0.366094	valid_1's rmse: 0.734684
+[8200]	training's rmse: 0.363419	valid_1's rmse: 0.734514
+[8300]	training's rmse: 0.360887	valid_1's rmse: 0.734087
+[8400]	training's rmse: 0.358297	valid_1's rmse: 0.733939
+[8500]	training's rmse: 0.355807	valid_1's rmse: 0.733984
+----------------------------------------------------------------------------------------------------
+Fold 4
+[100]	training's rmse: 1.08052	valid_1's rmse: 1.10181
+[200]	training's rmse: 0.957145	valid_1's rmse: 0.992688
+[300]	training's rmse: 0.895651	valid_1's rmse: 0.944743
+[400]	training's rmse: 0.859326	valid_1's rmse: 0.920923
+[500]	training's rmse: 0.833204	valid_1's rmse: 0.905718
+[600]	training's rmse: 0.81156	valid_1's rmse: 0.89487
+[700]	training's rmse: 0.793483	valid_1's rmse: 0.887147
+[800]	training's rmse: 0.777961	valid_1's rmse: 0.882629
+[900]	training's rmse: 0.764359	valid_1's rmse: 0.878514
+[1000]	training's rmse: 0.750494	valid_1's rmse: 0.874848
+[1100]	training's rmse: 0.737741	valid_1's rmse: 0.871958
+[1200]	training's rmse: 0.725636	valid_1's rmse: 0.870118
+[1300]	training's rmse: 0.71378	valid_1's rmse: 0.868022
+[1400]	training's rmse: 0.703486	valid_1's rmse: 0.865805
+[1500]	training's rmse: 0.693821	valid_1's rmse: 0.86411
+[1600]	training's rmse: 0.684451	valid_1's rmse: 0.862407
+[1700]	training's rmse: 0.675214	valid_1's rmse: 0.860682
+[1800]	training's rmse: 0.666765	valid_1's rmse: 0.860192
+[1900]	training's rmse: 0.65809	valid_1's rmse: 0.859241
+[2000]	training's rmse: 0.64966	valid_1's rmse: 0.858186
+[2100]	training's rmse: 0.640898	valid_1's rmse: 0.857032
+[2200]	training's rmse: 0.632716	valid_1's rmse: 0.856225
+[2300]	training's rmse: 0.624941	valid_1's rmse: 0.855314
+[2400]	training's rmse: 0.617217	valid_1's rmse: 0.854015
+[2500]	training's rmse: 0.610165	valid_1's rmse: 0.853499
+[2600]	training's rmse: 0.602755	valid_1's rmse: 0.852641
+[2700]	training's rmse: 0.596099	valid_1's rmse: 0.851654
+[2800]	training's rmse: 0.589426	valid_1's rmse: 0.85151
+[2900]	training's rmse: 0.582991	valid_1's rmse: 0.850961
+[3000]	training's rmse: 0.576169	valid_1's rmse: 0.850434
+[3100]	training's rmse: 0.569922	valid_1's rmse: 0.849841
+[3200]	training's rmse: 0.5637	valid_1's rmse: 0.849575
+[3300]	training's rmse: 0.557243	valid_1's rmse: 0.848658
+[3400]	training's rmse: 0.551319	valid_1's rmse: 0.848393
+[3500]	training's rmse: 0.545449	valid_1's rmse: 0.847287
+[3600]	training's rmse: 0.539346	valid_1's rmse: 0.846493
+[3700]	training's rmse: 0.533209	valid_1's rmse: 0.845704
+[3800]	training's rmse: 0.527556	valid_1's rmse: 0.84487
+[3900]	training's rmse: 0.522569	valid_1's rmse: 0.844467
+[4000]	training's rmse: 0.517043	valid_1's rmse: 0.844526
+----------------------------------------------------------------------------------------------------
+Fold 5
+[100]	training's rmse: 1.08585	valid_1's rmse: 1.0888
+[200]	training's rmse: 0.962908	valid_1's rmse: 0.962488
+[300]	training's rmse: 0.901974	valid_1's rmse: 0.902408
+[400]	training's rmse: 0.865192	valid_1's rmse: 0.867386
+[500]	training's rmse: 0.839346	valid_1's rmse: 0.845872
+[600]	training's rmse: 0.818368	valid_1's rmse: 0.831731
+[700]	training's rmse: 0.800789	valid_1's rmse: 0.821885
+[800]	training's rmse: 0.785616	valid_1's rmse: 0.81446
+[900]	training's rmse: 0.770479	valid_1's rmse: 0.807517
+[1000]	training's rmse: 0.757634	valid_1's rmse: 0.800803
+[1100]	training's rmse: 0.744474	valid_1's rmse: 0.796141
+[1200]	training's rmse: 0.732367	valid_1's rmse: 0.792562
+[1300]	training's rmse: 0.72192	valid_1's rmse: 0.788804
+[1400]	training's rmse: 0.711098	valid_1's rmse: 0.785595
+[1500]	training's rmse: 0.701802	valid_1's rmse: 0.782886
+[1600]	training's rmse: 0.692095	valid_1's rmse: 0.780437
+[1700]	training's rmse: 0.682725	valid_1's rmse: 0.777986
+[1800]	training's rmse: 0.673339	valid_1's rmse: 0.775671
+[1900]	training's rmse: 0.664606	valid_1's rmse: 0.773764
+[2000]	training's rmse: 0.655773	valid_1's rmse: 0.772147
+[2100]	training's rmse: 0.647093	valid_1's rmse: 0.770372
+[2200]	training's rmse: 0.638635	valid_1's rmse: 0.768776
+[2300]	training's rmse: 0.630679	valid_1's rmse: 0.766979
+[2400]	training's rmse: 0.622897	valid_1's rmse: 0.765783
+[2500]	training's rmse: 0.616172	valid_1's rmse: 0.764534
+[2600]	training's rmse: 0.608851	valid_1's rmse: 0.763485
+[2700]	training's rmse: 0.600934	valid_1's rmse: 0.761215
+[2800]	training's rmse: 0.593587	valid_1's rmse: 0.759852
+[2900]	training's rmse: 0.586645	valid_1's rmse: 0.758362
+[3000]	training's rmse: 0.579664	valid_1's rmse: 0.757175
+[3100]	training's rmse: 0.572731	valid_1's rmse: 0.756495
+[3200]	training's rmse: 0.566626	valid_1's rmse: 0.755716
+[3300]	training's rmse: 0.560125	valid_1's rmse: 0.754709
+[3400]	training's rmse: 0.553907	valid_1's rmse: 0.754242
+[3500]	training's rmse: 0.548238	valid_1's rmse: 0.75355
+[3600]	training's rmse: 0.542654	valid_1's rmse: 0.753108
+[3700]	training's rmse: 0.537016	valid_1's rmse: 0.752219
+[3800]	training's rmse: 0.531306	valid_1's rmse: 0.75175
+[3900]	training's rmse: 0.525919	valid_1's rmse: 0.75111
+[4000]	training's rmse: 0.520529	valid_1's rmse: 0.750933
+[4100]	training's rmse: 0.515048	valid_1's rmse: 0.750415
+[4200]	training's rmse: 0.509967	valid_1's rmse: 0.749804
+[4300]	training's rmse: 0.50444	valid_1's rmse: 0.749598
+----------------------------------------------------------------------------------------------------
+Fold 6
+[100]	training's rmse: 1.07717	valid_1's rmse: 1.15101
+[200]	training's rmse: 0.952993	valid_1's rmse: 1.05449
+[300]	training's rmse: 0.890336	valid_1's rmse: 1.0051
+[400]	training's rmse: 0.854034	valid_1's rmse: 0.97992
+[500]	training's rmse: 0.829022	valid_1's rmse: 0.961968
+[600]	training's rmse: 0.808833	valid_1's rmse: 0.948978
+[700]	training's rmse: 0.790406	valid_1's rmse: 0.938329
+[800]	training's rmse: 0.774982	valid_1's rmse: 0.929229
+[900]	training's rmse: 0.760376	valid_1's rmse: 0.921573
+[1000]	training's rmse: 0.747326	valid_1's rmse: 0.915695
+[1100]	training's rmse: 0.735048	valid_1's rmse: 0.910791
+[1200]	training's rmse: 0.723659	valid_1's rmse: 0.906755
+[1300]	training's rmse: 0.712704	valid_1's rmse: 0.902528
+[1400]	training's rmse: 0.703053	valid_1's rmse: 0.898696
+[1500]	training's rmse: 0.693463	valid_1's rmse: 0.895121
+[1600]	training's rmse: 0.683829	valid_1's rmse: 0.891903
+[1700]	training's rmse: 0.674574	valid_1's rmse: 0.88837
+[1800]	training's rmse: 0.665734	valid_1's rmse: 0.885233
+[1900]	training's rmse: 0.657306	valid_1's rmse: 0.88286
+[2000]	training's rmse: 0.648744	valid_1's rmse: 0.879974
+[2100]	training's rmse: 0.640677	valid_1's rmse: 0.87746
+[2200]	training's rmse: 0.632552	valid_1's rmse: 0.8752
+[2300]	training's rmse: 0.625243	valid_1's rmse: 0.873237
+[2400]	training's rmse: 0.617877	valid_1's rmse: 0.870907
+[2500]	training's rmse: 0.610186	valid_1's rmse: 0.868614
+[2600]	training's rmse: 0.602932	valid_1's rmse: 0.86619
+[2700]	training's rmse: 0.596397	valid_1's rmse: 0.864475
+[2800]	training's rmse: 0.590051	valid_1's rmse: 0.862681
+[2900]	training's rmse: 0.583072	valid_1's rmse: 0.86126
+[3000]	training's rmse: 0.576867	valid_1's rmse: 0.859904
+[3100]	training's rmse: 0.570404	valid_1's rmse: 0.858191
+[3200]	training's rmse: 0.56402	valid_1's rmse: 0.857026
+[3300]	training's rmse: 0.558261	valid_1's rmse: 0.855589
+[3400]	training's rmse: 0.552491	valid_1's rmse: 0.854315
+[3500]	training's rmse: 0.546451	valid_1's rmse: 0.85269
+[3600]	training's rmse: 0.540742	valid_1's rmse: 0.851796
+[3700]	training's rmse: 0.53497	valid_1's rmse: 0.850699
+[3800]	training's rmse: 0.528975	valid_1's rmse: 0.849792
+[3900]	training's rmse: 0.523538	valid_1's rmse: 0.848436
+[4000]	training's rmse: 0.518126	valid_1's rmse: 0.847392
+[4100]	training's rmse: 0.512844	valid_1's rmse: 0.846741
+[4200]	training's rmse: 0.507688	valid_1's rmse: 0.846026
+[4300]	training's rmse: 0.502775	valid_1's rmse: 0.845197
+[4400]	training's rmse: 0.497692	valid_1's rmse: 0.844223
+[4500]	training's rmse: 0.492691	valid_1's rmse: 0.843587
+[4600]	training's rmse: 0.488054	valid_1's rmse: 0.842689
+[4700]	training's rmse: 0.483201	valid_1's rmse: 0.841732
+[4800]	training's rmse: 0.478433	valid_1's rmse: 0.840832
+[4900]	training's rmse: 0.474156	valid_1's rmse: 0.840178
+[5000]	training's rmse: 0.46963	valid_1's rmse: 0.839367
+[5100]	training's rmse: 0.465065	valid_1's rmse: 0.838283
+[5200]	training's rmse: 0.460767	valid_1's rmse: 0.837805
+[5300]	training's rmse: 0.456366	valid_1's rmse: 0.837564
+[5400]	training's rmse: 0.452089	valid_1's rmse: 0.837284
+[5500]	training's rmse: 0.448212	valid_1's rmse: 0.836832
+[5600]	training's rmse: 0.444279	valid_1's rmse: 0.836425
+[5700]	training's rmse: 0.440108	valid_1's rmse: 0.835909
+[5800]	training's rmse: 0.436349	valid_1's rmse: 0.835353
+[5900]	training's rmse: 0.432461	valid_1's rmse: 0.834908
+[6000]	training's rmse: 0.428521	valid_1's rmse: 0.834325
+[6100]	training's rmse: 0.424835	valid_1's rmse: 0.833876
+[6200]	training's rmse: 0.421134	valid_1's rmse: 0.833258
+[6300]	training's rmse: 0.417642	valid_1's rmse: 0.832746
+[6400]	training's rmse: 0.414053	valid_1's rmse: 0.832318
+[6500]	training's rmse: 0.410674	valid_1's rmse: 0.831813
+[6600]	training's rmse: 0.406903	valid_1's rmse: 0.831325
+[6700]	training's rmse: 0.403547	valid_1's rmse: 0.831114
+[6800]	training's rmse: 0.400496	valid_1's rmse: 0.83081
+[6900]	training's rmse: 0.397338	valid_1's rmse: 0.83044
+[7000]	training's rmse: 0.394147	valid_1's rmse: 0.830033
+[7100]	training's rmse: 0.391042	valid_1's rmse: 0.829907
+----------------------------------------------------------------------------------------------------
+Fold 7
+[100]	training's rmse: 1.08299	valid_1's rmse: 1.08981
+[200]	training's rmse: 0.959842	valid_1's rmse: 0.983824
+[300]	training's rmse: 0.897023	valid_1's rmse: 0.934135
+[400]	training's rmse: 0.860106	valid_1's rmse: 0.906081
+[500]	training's rmse: 0.833471	valid_1's rmse: 0.888178
+[600]	training's rmse: 0.81279	valid_1's rmse: 0.877135
+[700]	training's rmse: 0.794838	valid_1's rmse: 0.868005
+[800]	training's rmse: 0.778013	valid_1's rmse: 0.860547
+[900]	training's rmse: 0.76329	valid_1's rmse: 0.854538
+[1000]	training's rmse: 0.749485	valid_1's rmse: 0.849308
+[1100]	training's rmse: 0.737658	valid_1's rmse: 0.845394
+[1200]	training's rmse: 0.725744	valid_1's rmse: 0.841656
+[1300]	training's rmse: 0.715556	valid_1's rmse: 0.837811
+[1400]	training's rmse: 0.704833	valid_1's rmse: 0.834821
+[1500]	training's rmse: 0.694997	valid_1's rmse: 0.831985
+[1600]	training's rmse: 0.685355	valid_1's rmse: 0.829259
+[1700]	training's rmse: 0.676365	valid_1's rmse: 0.826761
+[1800]	training's rmse: 0.667296	valid_1's rmse: 0.82455
+[1900]	training's rmse: 0.658775	valid_1's rmse: 0.822205
+[2000]	training's rmse: 0.649864	valid_1's rmse: 0.820188
+[2100]	training's rmse: 0.642291	valid_1's rmse: 0.818118
+[2200]	training's rmse: 0.633998	valid_1's rmse: 0.816265
+[2300]	training's rmse: 0.626147	valid_1's rmse: 0.814458
+[2400]	training's rmse: 0.618159	valid_1's rmse: 0.8128
+[2500]	training's rmse: 0.610819	valid_1's rmse: 0.811701
+[2600]	training's rmse: 0.604058	valid_1's rmse: 0.810734
+[2700]	training's rmse: 0.596882	valid_1's rmse: 0.809699
+[2800]	training's rmse: 0.589855	valid_1's rmse: 0.808393
+[2900]	training's rmse: 0.583408	valid_1's rmse: 0.807621
+[3000]	training's rmse: 0.57688	valid_1's rmse: 0.806494
+[3100]	training's rmse: 0.570328	valid_1's rmse: 0.804975
+[3200]	training's rmse: 0.564052	valid_1's rmse: 0.804046
+[3300]	training's rmse: 0.558043	valid_1's rmse: 0.803123
+[3400]	training's rmse: 0.552014	valid_1's rmse: 0.802335
+[3500]	training's rmse: 0.545929	valid_1's rmse: 0.801768
+[3600]	training's rmse: 0.540566	valid_1's rmse: 0.800978
+[3700]	training's rmse: 0.534838	valid_1's rmse: 0.799871
+[3800]	training's rmse: 0.529193	valid_1's rmse: 0.799139
+[3900]	training's rmse: 0.523934	valid_1's rmse: 0.799122
+----------------------------------------------------------------------------------------------------
+Fold 8
+[100]	training's rmse: 1.08238	valid_1's rmse: 1.1023
+[200]	training's rmse: 0.95866	valid_1's rmse: 0.991447
+[300]	training's rmse: 0.896078	valid_1's rmse: 0.94187
+[400]	training's rmse: 0.859367	valid_1's rmse: 0.915392
+[500]	training's rmse: 0.83408	valid_1's rmse: 0.899689
+[600]	training's rmse: 0.813001	valid_1's rmse: 0.889803
+[700]	training's rmse: 0.795225	valid_1's rmse: 0.882301
+[800]	training's rmse: 0.779533	valid_1's rmse: 0.876332
+[900]	training's rmse: 0.765445	valid_1's rmse: 0.87102
+[1000]	training's rmse: 0.751674	valid_1's rmse: 0.866338
+[1100]	training's rmse: 0.739341	valid_1's rmse: 0.861821
+[1200]	training's rmse: 0.727574	valid_1's rmse: 0.857798
+[1300]	training's rmse: 0.717401	valid_1's rmse: 0.854782
+[1400]	training's rmse: 0.70722	valid_1's rmse: 0.851666
+[1500]	training's rmse: 0.697523	valid_1's rmse: 0.849178
+[1600]	training's rmse: 0.687177	valid_1's rmse: 0.845995
+[1700]	training's rmse: 0.677751	valid_1's rmse: 0.844058
+[1800]	training's rmse: 0.668995	valid_1's rmse: 0.84184
+[1900]	training's rmse: 0.66025	valid_1's rmse: 0.84014
+[2000]	training's rmse: 0.652208	valid_1's rmse: 0.838029
+[2100]	training's rmse: 0.64415	valid_1's rmse: 0.836028
+[2200]	training's rmse: 0.636864	valid_1's rmse: 0.835024
+[2300]	training's rmse: 0.629551	valid_1's rmse: 0.833672
+[2400]	training's rmse: 0.621251	valid_1's rmse: 0.831385
+[2500]	training's rmse: 0.614293	valid_1's rmse: 0.830015
+[2600]	training's rmse: 0.60743	valid_1's rmse: 0.828568
+[2700]	training's rmse: 0.600279	valid_1's rmse: 0.826913
+[2800]	training's rmse: 0.593744	valid_1's rmse: 0.825546
+[2900]	training's rmse: 0.586727	valid_1's rmse: 0.824509
+[3000]	training's rmse: 0.580181	valid_1's rmse: 0.823754
+[3100]	training's rmse: 0.573983	valid_1's rmse: 0.822369
+[3200]	training's rmse: 0.567873	valid_1's rmse: 0.821175
+[3300]	training's rmse: 0.561515	valid_1's rmse: 0.819833
+[3400]	training's rmse: 0.555223	valid_1's rmse: 0.818798
+[3500]	training's rmse: 0.549219	valid_1's rmse: 0.817908
+[3600]	training's rmse: 0.542921	valid_1's rmse: 0.816818
+[3700]	training's rmse: 0.536876	valid_1's rmse: 0.816337
+[3800]	training's rmse: 0.531451	valid_1's rmse: 0.815223
+[3900]	training's rmse: 0.526183	valid_1's rmse: 0.814301
+[4000]	training's rmse: 0.52065	valid_1's rmse: 0.81314
+[4100]	training's rmse: 0.5155	valid_1's rmse: 0.812447
+[4200]	training's rmse: 0.510311	valid_1's rmse: 0.811616
+[4300]	training's rmse: 0.505287	valid_1's rmse: 0.810983
+[4400]	training's rmse: 0.499986	valid_1's rmse: 0.809794
+[4500]	training's rmse: 0.495126	valid_1's rmse: 0.809007
+[4600]	training's rmse: 0.490159	valid_1's rmse: 0.808145
+[4700]	training's rmse: 0.485485	valid_1's rmse: 0.807829
+[4800]	training's rmse: 0.480517	valid_1's rmse: 0.806838
+[4900]	training's rmse: 0.475868	valid_1's rmse: 0.806456
+[5000]	training's rmse: 0.471006	valid_1's rmse: 0.805848
+[5100]	training's rmse: 0.466639	valid_1's rmse: 0.805391
+[5200]	training's rmse: 0.462243	valid_1's rmse: 0.804944
+[5300]	training's rmse: 0.458113	valid_1's rmse: 0.804816
+[5400]	training's rmse: 0.454139	valid_1's rmse: 0.80454
+[5500]	training's rmse: 0.449976	valid_1's rmse: 0.803586
+[5600]	training's rmse: 0.445833	valid_1's rmse: 0.802741
+[5700]	training's rmse: 0.441655	valid_1's rmse: 0.802558
+[5800]	training's rmse: 0.438026	valid_1's rmse: 0.80198
+[5900]	training's rmse: 0.433859	valid_1's rmse: 0.801306
+[6000]	training's rmse: 0.429976	valid_1's rmse: 0.801345
+[6100]	training's rmse: 0.426072	valid_1's rmse: 0.800879
+[6200]	training's rmse: 0.422538	valid_1's rmse: 0.800366
+[6300]	training's rmse: 0.418726	valid_1's rmse: 0.800106
+[6400]	training's rmse: 0.415199	valid_1's rmse: 0.799698
+[6500]	training's rmse: 0.411669	valid_1's rmse: 0.799309
+[6600]	training's rmse: 0.408259	valid_1's rmse: 0.799159
+[6700]	training's rmse: 0.405002	valid_1's rmse: 0.798921
+[6800]	training's rmse: 0.401666	valid_1's rmse: 0.798682
+[6900]	training's rmse: 0.398258	valid_1's rmse: 0.798504
+[7000]	training's rmse: 0.395019	valid_1's rmse: 0.798103
+[7100]	training's rmse: 0.391883	valid_1's rmse: 0.798179
+----------------------------------------------------------------------------------------------------
+Fold 9
+[100]	training's rmse: 1.08412	valid_1's rmse: 1.07881
+[200]	training's rmse: 0.9618	valid_1's rmse: 0.961913
+[300]	training's rmse: 0.900629	valid_1's rmse: 0.906314
+[400]	training's rmse: 0.864576	valid_1's rmse: 0.87737
+[500]	training's rmse: 0.83767	valid_1's rmse: 0.857766
+[600]	training's rmse: 0.817166	valid_1's rmse: 0.845546
+[700]	training's rmse: 0.799545	valid_1's rmse: 0.837187
+[800]	training's rmse: 0.783259	valid_1's rmse: 0.829123
+[900]	training's rmse: 0.768439	valid_1's rmse: 0.822448
+[1000]	training's rmse: 0.754631	valid_1's rmse: 0.816416
+[1100]	training's rmse: 0.742222	valid_1's rmse: 0.81082
+[1200]	training's rmse: 0.730191	valid_1's rmse: 0.806883
+[1300]	training's rmse: 0.718835	valid_1's rmse: 0.803303
+[1400]	training's rmse: 0.708189	valid_1's rmse: 0.799712
+[1500]	training's rmse: 0.697747	valid_1's rmse: 0.79701
+[1600]	training's rmse: 0.687859	valid_1's rmse: 0.794585
+[1700]	training's rmse: 0.678304	valid_1's rmse: 0.792081
+[1800]	training's rmse: 0.669784	valid_1's rmse: 0.790199
+[1900]	training's rmse: 0.661601	valid_1's rmse: 0.788333
+[2000]	training's rmse: 0.652947	valid_1's rmse: 0.786631
+[2100]	training's rmse: 0.645057	valid_1's rmse: 0.7858
+[2200]	training's rmse: 0.636806	valid_1's rmse: 0.784655
+[2300]	training's rmse: 0.62874	valid_1's rmse: 0.782906
+[2400]	training's rmse: 0.620762	valid_1's rmse: 0.781779
+[2500]	training's rmse: 0.613002	valid_1's rmse: 0.780576
+[2600]	training's rmse: 0.605905	valid_1's rmse: 0.779265
+[2700]	training's rmse: 0.59883	valid_1's rmse: 0.77836
+[2800]	training's rmse: 0.591912	valid_1's rmse: 0.777707
+[2900]	training's rmse: 0.584878	valid_1's rmse: 0.777077
+[3000]	training's rmse: 0.578689	valid_1's rmse: 0.776835
+----------------------------------------------------------------------------------------------------
+Fold 10
+[100]	training's rmse: 1.07882	valid_1's rmse: 1.10809
+[200]	training's rmse: 0.957621	valid_1's rmse: 0.999029
+[300]	training's rmse: 0.895977	valid_1's rmse: 0.94723
+[400]	training's rmse: 0.859666	valid_1's rmse: 0.920504
+[500]	training's rmse: 0.833243	valid_1's rmse: 0.902172
+[600]	training's rmse: 0.812075	valid_1's rmse: 0.889557
+[700]	training's rmse: 0.794121	valid_1's rmse: 0.878787
+[800]	training's rmse: 0.778142	valid_1's rmse: 0.871379
+[900]	training's rmse: 0.763536	valid_1's rmse: 0.865619
+[1000]	training's rmse: 0.750016	valid_1's rmse: 0.859385
+[1100]	training's rmse: 0.737804	valid_1's rmse: 0.855356
+[1200]	training's rmse: 0.726947	valid_1's rmse: 0.85071
+[1300]	training's rmse: 0.715658	valid_1's rmse: 0.847819
+[1400]	training's rmse: 0.70579	valid_1's rmse: 0.844744
+[1500]	training's rmse: 0.696561	valid_1's rmse: 0.841271
+[1600]	training's rmse: 0.68619	valid_1's rmse: 0.838923
+[1700]	training's rmse: 0.677659	valid_1's rmse: 0.836707
+[1800]	training's rmse: 0.668347	valid_1's rmse: 0.834409
+[1900]	training's rmse: 0.659956	valid_1's rmse: 0.832606
+[2000]	training's rmse: 0.651542	valid_1's rmse: 0.830592
+[2100]	training's rmse: 0.643386	valid_1's rmse: 0.828363
+[2200]	training's rmse: 0.635556	valid_1's rmse: 0.826226
+[2300]	training's rmse: 0.627707	valid_1's rmse: 0.824422
+[2400]	training's rmse: 0.62062	valid_1's rmse: 0.822321
+[2500]	training's rmse: 0.613889	valid_1's rmse: 0.820265
+[2600]	training's rmse: 0.606401	valid_1's rmse: 0.819122
+[2700]	training's rmse: 0.599273	valid_1's rmse: 0.816866
+[2800]	training's rmse: 0.592309	valid_1's rmse: 0.816094
+[2900]	training's rmse: 0.585391	valid_1's rmse: 0.814581
+[3000]	training's rmse: 0.57872	valid_1's rmse: 0.813181
+[3100]	training's rmse: 0.572024	valid_1's rmse: 0.812018
+[3200]	training's rmse: 0.565648	valid_1's rmse: 0.811071
+[3300]	training's rmse: 0.559513	valid_1's rmse: 0.810194
+[3400]	training's rmse: 0.553687	valid_1's rmse: 0.809308
+[3500]	training's rmse: 0.547732	valid_1's rmse: 0.808278
+[3600]	training's rmse: 0.541572	valid_1's rmse: 0.807546
+[3700]	training's rmse: 0.53604	valid_1's rmse: 0.806638
+[3800]	training's rmse: 0.530432	valid_1's rmse: 0.805679
+[3900]	training's rmse: 0.52468	valid_1's rmse: 0.804892
+[4000]	training's rmse: 0.519379	valid_1's rmse: 0.803998
+[4100]	training's rmse: 0.514332	valid_1's rmse: 0.803621
+[4200]	training's rmse: 0.508775	valid_1's rmse: 0.80309
+[4300]	training's rmse: 0.503922	valid_1's rmse: 0.802303
+[4400]	training's rmse: 0.498769	valid_1's rmse: 0.802101
+[4500]	training's rmse: 0.493512	valid_1's rmse: 0.801652
+[4600]	training's rmse: 0.488934	valid_1's rmse: 0.801219
+[4700]	training's rmse: 0.483936	valid_1's rmse: 0.800595
+[4800]	training's rmse: 0.479225	valid_1's rmse: 0.800065
+[4900]	training's rmse: 0.474804	valid_1's rmse: 0.799253
+[5000]	training's rmse: 0.470136	valid_1's rmse: 0.79918
+[5100]	training's rmse: 0.465755	valid_1's rmse: 0.798919
+##### feature importance #####
+                                   importance
+feature                                      
+User_Momentum                    29512.552654
+Year_of_Release                  27602.552228
+publisher_Platform_pca_4         24363.457901
+User_Count                       19613.133256
+Critic_Momentum                  15884.510612
+Platform_PC                      15012.259003
+publisher_Rating_pca_0           14668.998313
+Platform_Year_of_Release         11290.400011
+publisher_Genre_pca_0            10529.899776
+Critic_Count                     10059.280085
+name_bert_pca_1                   8704.498415
+num_series                        7903.643387
+publisher_Genre_pca_3             7280.016050
+num_series_norm                   7231.965370
+Platform_Genre                    7050.913480
+Platform_Rating                   6422.558974
+Critic_Score                      6243.809772
+series_lifespan                   5819.117781
+name_bert_pca_4                   4692.488568
+publisher_Platform_pca_1          4531.084086
+Name                              4238.926409
+pub_bert_pca_13                   3939.957909
+publisher_Platform_pca_3          3801.063350
+publisher_Genre_pca_5             3648.395092
+publisher_Year_of_Release_pca_6   3631.680939
+name_bert_pca_17                  3615.665129
+name_bert_pca_0                   3425.462813
+name_bert_pca_7                   3334.075442
+pub_bert_pca_22                   3269.260538
+name_bert_pca_12                  3213.064372
+name_bert_pca_22                  3066.420810
+User_Score                        2997.771151
+publisher_Rating_pca_1            2899.020543
+name_bert_pca_2                   2826.534023
+publisher_Platform_pca_2          2713.272565
+name_bert_pca_10                  2688.409020
+name_bert_pca_3                   2674.609285
+name_bert_pca_30                  2657.296735
+publisher_Genre_pca_2             2654.818820
+name_bert_pca_13                  2647.299965
+name_bert_pca_14                  2646.350329
+publisher_Year_of_Release_pca_0   2599.019044
+name_bert_pca_5                   2558.928057
+name_bert_pca_44                  2538.516960
+publisher_Platform_pca_0          2477.426535
+publisher_Year_of_Release_pca_1   2474.247059
+name_bert_pca_35                  2397.478165
+name_bert_pca_39                  2395.098966
+pub_bert_pca_1                    2361.362362
+name_bert_pca_47                  2320.565895
+cv_score_fold_mean: 0.7974422268331292
