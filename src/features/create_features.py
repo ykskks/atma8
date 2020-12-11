@@ -1771,6 +1771,59 @@ class RatingLDA(Feature):
         self.test = test[gen_cols]
 
 
+class NonEnglishWords(Feature):
+    def create_features(self):
+        global train, test
+
+        import texthero as hero
+        from texthero import preprocessing
+        from nltk.corpus import words, brown
+        import nltk
+        nltk.download('brown')
+        nltk.download('words')
+
+        words_vocab = set(words.words())
+        brown_vocab = set(brown.words())
+        vocab = words_vocab.union(brown_vocab)
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        custom_pipeline = [preprocessing.fillna
+                        , preprocessing.lowercase
+                        , preprocessing.remove_digits
+                        , preprocessing.remove_punctuation
+                        , preprocessing.remove_diacritics
+                        , preprocessing.remove_whitespace
+                        , preprocessing.remove_stopwords
+                        ]
+
+        names = hero.clean(whole_df['Name'], custom_pipeline)
+        pubs = hero.clean(whole_df['Publisher'], custom_pipeline)
+        devs = hero.clean(whole_df['Developer'], custom_pipeline)
+
+        def contains_non_english(name):
+            # ratio of english words >= 50% ===> False
+            ws = name.split()
+            evals = [w in vocab for w in ws]
+            if len(evals) == 0:
+                return np.nan
+            english_greater_or_equal_50 = sum(evals)/len(evals) >= 0.5
+            return not english_greater_or_equal_50
+
+        whole_df["name_non_english"] = names.map(contains_non_english).astype(float)
+        whole_df["pub_non_english"] = pubs.map(contains_non_english).astype(float)
+        whole_df["dev_non_english"] = devs.map(contains_non_english).astype(float)
+
+        gen_cols = ["name_non_english", "pub_non_english", "dev_non_english"]
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 if __name__ == '__main__':
     # TRAIN_PATH = Path("./data/raw/train_fixed.csv")
     # TEST_PATH = Path("./data/raw/test_fixed.csv")

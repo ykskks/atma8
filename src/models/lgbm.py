@@ -38,7 +38,7 @@ class Experiment:
         # X_test.drop(del_cols_ad_val, axis=1, inplace=True)
 
         self.logger.debug(f"feature using: {self.features}")
-        self.logger.debug(f"feature dropeed: {del_cols_ad_val}")
+        # self.logger.debug(f"feature dropeed: {del_cols_ad_val}")
 
         train["Global_Sales_log1p"] = np.log1p(train["Global_Sales"])
         y_train = train["Global_Sales_log1p"].to_frame()
