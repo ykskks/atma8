@@ -8,7 +8,7 @@ import lightgbm as lgb
 import numpy as np
 import pandas as pd
 
-sys.path.append("../../")
+sys.path.append(".")
 from utils import get_logger, log_evaluation, top2accuracy, eval_func, load_datasets, track_experiment
 
 
@@ -16,12 +16,56 @@ from utils import get_logger, log_evaluation, top2accuracy, eval_func, load_data
 
 
 class Experiment:
-    def __init__(self, exp_id, config, model_type):
-        for k, v in config.items():
-            setattr(self, k, v)
-        self.exp_id = exp_id
-        self.logger = get_logger(exp_id)
-        self.model_type = model_type
+    def __init__(self, seed):
+        self.features = [
+            "Base_6",
+            "BertPCA50",
+            "Momentum",
+            "Interaction",
+            "SimultaneousPlatformCount",
+            "PublisherPCA",
+            "DeveloperPCA",
+            "Series",
+            "NumSeries",
+            "NumSeriesNormalized",
+            "SeriesLifespan",
+            "PublisherDeveloperLDA",
+            "DeveloperPublisherLDA",
+            "ScoreDiffFromPlatform",
+            "ScoreRatioFromPlatform",
+            "ScoreDiffFromYear",
+            "ScoreRatioFromYear",
+            "ScoreDiffFromGenre",
+            "ScoreRatioFromGenre",
+            "ScoreDiffFromPublisher",
+            "ScoreRatioFromPublisher",
+            "ScoreDiffFromDeveloper",
+            "ScoreRatioFromDeveloper",
+            "ScoreDiffFromRating",
+            "ScoreRatioFromRating",
+            "SeriesOrder",
+            "PlatformLDA"
+        ]
+        self.cv = "stratified"
+        self.params = {
+            "objective": "root_mean_squared_error",
+            "metric": "root_mean_squared_error",
+            "learning_rate": 0.01,
+            "num_leaves": 22,
+            "min_data_in_leaf": 100,
+            "max_depth": 5,
+            "subsample_freq": 1,
+            "subsample": 0.7,
+            "reg_alpha": 0.0001,
+            "reg_lambda": 0.0001,
+            "colsample_bytree": 0.3,
+            "early_stopping_rounds": 100,
+            "n_estimators": 10000,
+            "seed": seed
+        }
+        # self.exp_id = exp_id
+        # self.logger = get_logger(exp_id)
+        # self.model_type = model_type
 
     def load_data(self):
         train = pd.read_csv("./data/raw/train_fixed.csv")
@@ -37,8 +81,8 @@ class Experiment:
         # X_train.drop(del_cols_ad_val, axis=1, inplace=True)
         # X_test.drop(del_cols_ad_val, axis=1, inplace=True)
 
-        self.logger.debug(f"feature using: {self.features}")
-        self.logger.debug(f"feature dropeed: {del_cols_ad_val}")
+        print(f"feature using: {self.features}")
+        # print(f"feature dropeed: {del_cols_ad_val}")
 
         train["Global_Sales_log1p"] = np.log1p(train["Global_Sales"])
         y_train = train["Global_Sales_log1p"].to_frame()
@@ -61,12 +105,12 @@ class Experiment:
 
         # for fold, (train_idx, val_idx) in enumerate(folds.split(X_train, groups=groups)):
         for fold, (train_idx, val_idx) in enumerate(folds.split(X_train, y_to_stratify)):
-            self.logger.debug("-" * 100)
-            self.logger.debug(f"Fold {fold+1}")
+            print("-" * 100)
+            print(f"Fold {fold+1}")
             train_data = lgb.Dataset(X_train.iloc[train_idx], label=y_train.iloc[train_idx])
             val_data = lgb.Dataset(X_train.iloc[val_idx], label=y_train.iloc[val_idx])
-            callbacks = [log_evaluation(self.logger, period=100)]
-            clf = lgb.train(self.params, train_data, valid_sets=[train_data, val_data], verbose_eval=100, early_stopping_rounds=100, callbacks=callbacks)  #, feval=eval_func)
+            # callbacks = [log_evaluation(self.logger, period=100)]
+            clf = lgb.train(self.params, train_data, valid_sets=[train_data, val_data], verbose_eval=100, early_stopping_rounds=100)  #, feval=eval_func)
             oof[val_idx] = clf.predict(X_train.iloc[val_idx].values, num_iteration=clf.best_iteration)
             fold_score = mean_squared_log_error(np.expm1(y_train.iloc[val_idx].values), np.expm1(oof[val_idx])) ** .5
             fold_scores.append(fold_score)
@@ -80,10 +124,10 @@ class Experiment:
             predictions += np.expm1(clf.predict(X_test, num_iteration=clf.best_iteration)) / folds.n_splits
 
         feature_importance_df = feature_importance_df[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False).head(50)
-        self.logger.debug("##### feature importance #####")
-        self.logger.debug(feature_importance_df)
+        print("##### feature importance #####")
+        print(feature_importance_df)
         cv_score_fold_mean = sum(fold_scores) / len(fold_scores)
-        self.logger.debug(f"cv_score_fold_mean: {cv_score_fold_mean}")
+        print(f"cv_score_fold_mean: {cv_score_fold_mean}")
         return predictions, cv_score_fold_mean
 
     # def correct_predictions(self, predictions):
@@ -124,7 +168,8 @@ class Experiment:
     def save(self, predictions):
         spsbm = pd.read_csv("./data/raw/atmaCup8_sample-submission.csv")
         spsbm["Global_Sales"] = predictions
-        spsbm.to_csv(f"./submissions/{self.exp_id}_sub.csv", index=False)
+        # spsbm.to_csv(f"./submissions/{self.exp_id}_sub.csv", index=False)
+        return spsbm
 
     def track(self, cv_score):
         # track_experiment(self.exp_id, "model", self.model_type)
@@ -137,5 +182,18 @@ class Experiment:
         X_train, X_test, y_train, groups = self.load_data()
         predictions, cv_score = self.fit_and_predict(X_train, X_test, y_train, groups)
         # predictions = self.correct_predictions(predictions)
-        self.save(predictions)
-        self.track(cv_score)
+        spsbm = self.save(predictions)
+        # self.track(cv_score)
+        return spsbm
+
+
+if __name__ == "__main__":
+    final = None
+    num_models = 50
+    for i in range(num_models):
+        ret = Experiment(i).run()
+        if i == 0:
+            final = ret / num_models
+        else:
+            final += ret / num_models
+    final.to_csv(f"./submissions/exp046_seed_avg_{num_models}_sub.csv", index=False)
