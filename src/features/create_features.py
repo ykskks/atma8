@@ -739,6 +739,131 @@ class DeveloperPCA(Feature):
         self.test = test[gen_cols]
 
 
+class PublisherLDA(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        gen_cols = []
+
+        # unknown -> nan
+        whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
+
+        def lda(col):
+            from sklearn.decomposition import LatentDirichletAllocation
+            pivot = whole_df.pivot_table(index='Publisher', columns=col, values='Name', aggfunc='count').fillna(0)
+            lda = LatentDirichletAllocation(n_components=7)
+            transformed = lda.fit_transform(pivot)
+            transformed_df = pd.DataFrame(transformed, index=pivot.index)
+            transformed_df.columns = [f"publisher_{col}_lda_{i}" for i in range(7)]
+            return transformed_df.reset_index()
+
+        lda_cols = ["Platform", "Year_of_Release", "Genre", "Rating"]
+        for col in lda_cols:
+            ret = lda(col)
+            whole_df = whole_df.merge(ret, on="Publisher", how="left")
+            gen_cols.extend([col for col in ret if "lda" in col])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class PublisherDeveloperLDA(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        gen_cols = []
+
+        # unknown -> nan
+        whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
+
+        def lda(col, n_components):
+            from sklearn.decomposition import LatentDirichletAllocation
+            pivot = whole_df.pivot_table(index='Publisher', columns=col, values='Name', aggfunc='count').fillna(0)
+            lda = LatentDirichletAllocation(n_components=n_components)
+            transformed = lda.fit_transform(pivot)
+            transformed_df = pd.DataFrame(transformed, index=pivot.index)
+            transformed_df.columns = [f"publisher_{col}_lda_{n_components}_{i}" for i in range(n_components)]
+            return transformed_df.reset_index()
+
+        lda_cols = ["Developer"]
+        n_cs = [5, 20]
+        for col in lda_cols:
+            for n_c in n_cs:
+                ret = lda(col, n_c)
+                whole_df = whole_df.merge(ret, on="Publisher", how="left")
+                gen_cols.extend([col for col in ret if "lda" in col])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class DeveloperPublisherLDA(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        gen_cols = []
+
+        # unknown -> nan
+        whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
+
+        def lda(col, n_components):
+            from sklearn.decomposition import LatentDirichletAllocation
+            pivot = whole_df.pivot_table(index='Developer', columns=col, values='Name', aggfunc='count').fillna(0)
+            lda = LatentDirichletAllocation(n_components=n_components)
+            transformed = lda.fit_transform(pivot)
+            transformed_df = pd.DataFrame(transformed, index=pivot.index)
+            transformed_df.columns = [f"developer_{col}_lda_{n_components}_{i}" for i in range(n_components)]
+            return transformed_df.reset_index()
+
+        lda_cols = ["Publisher"]
+        n_cs = [5, 20]
+        for col in lda_cols:
+            for n_c in n_cs:
+                ret = lda(col, n_c)
+                whole_df = whole_df.merge(ret, on="Developer", how="left")
+                gen_cols.extend([col for col in ret if "lda" in col])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class DeveloperLDA(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        gen_cols = []
+
+        def lda(col):
+            from sklearn.decomposition import LatentDirichletAllocation
+            pivot = whole_df.pivot_table(index='Developer', columns=col, values='Name', aggfunc='count').fillna(0)
+            lda = LatentDirichletAllocation(n_components=7)
+            transformed = lda.fit_transform(pivot)
+            transformed_df = pd.DataFrame(transformed, index=pivot.index)
+            transformed_df.columns = [f"developer_{col}_lda_{i}" for i in range(7)]
+            return transformed_df.reset_index()
+
+        lda_cols = ["Platform", "Year_of_Release", "Genre", "Rating"]
+        for col in lda_cols:
+            ret = lda(col)
+            whole_df = whole_df.merge(ret, on="Developer", how="left")
+            gen_cols.extend([col for col in ret if "lda" in col])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 class BertPCA(Feature):
     def create_features(self):
         global train, test
@@ -1131,6 +1256,53 @@ class SeriesLifespan(Feature):
         self.test = test[gen_cols]
 
 
+class SeriesOrder(Feature):
+    def create_features(self):
+        global train, test
+
+        import texthero as hero
+        from texthero import preprocessing
+        from nltk.util import ngrams
+
+        gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        custom_pipeline = [preprocessing.fillna
+                        , preprocessing.lowercase
+                        , preprocessing.remove_digits
+                        , preprocessing.remove_punctuation
+                        , preprocessing.remove_diacritics
+                        , preprocessing.remove_whitespace
+                        , preprocessing.remove_stopwords
+                        ]
+
+        # 連続2単語と3単語で頻出するやつをseriesとする
+        def line_ngram(line):
+            words = [w for w in line.split(' ') if len(w) != 0] # 空文字は取り除く
+            return list(ngrams(words, 2)) + list(ngrams(words, 3))
+
+        names = hero.clean(whole_df['Name'], custom_pipeline)
+        name_grams = names.map(line_ngram)
+
+        grams = [x for row in name_grams for x in row if len(x) > 0]
+        top_grams = pd.Series(grams).value_counts().head(10000).sort_values(ascending=True)
+
+        # 昇順なのでそのタイトルに含まれる最も出現頻度の高いシリーズがそのタイトルの値となる
+        # n-gramのnの値については要検討
+        whole_df["series_order"] = 0
+        gen_cols.append("series_order")
+        for g, n in tqdm(top_grams.items()):
+            idx = name_grams.map(lambda x: g in x)
+            tmp = whole_df.loc[idx]
+            whole_df.loc[idx, "series_order"] = tmp["Year_of_Release"].rank(method="dense")
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 class SeriesRelative(Feature):
     def create_features(self):
         global train, test
@@ -1207,6 +1379,391 @@ class SeriesRelative(Feature):
             if len(tmp["Critic_Momentum"].dropna()) > 0:
                 mean = tmp["Critic_Momentum"].dropna().mean()
                 whole_df.loc[idx, "critic_momentum_relative_to_series_mean"] = whole_df.loc[idx, "Critic_Momentum"] - mean
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreDiffFromPlatform(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Platform"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromPlatform(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Platform"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreDiffFromYear(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Year_of_Release"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromYear(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Year_of_Release"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+def generate_groupby_diff_features(whole_df, key_cols, methods):
+    gen_cols = []
+    target_cols = ["User_Score", "Critic_Score", "User_Count", "Critic_Count", "User_Momentum", "Critic_Momentum"]
+    for key_col in key_cols:
+        for method in methods:
+            new_cols = [f"{col}_diff_{key_col}_{method}" for col in target_cols]
+            gen_cols.extend(new_cols)
+            whole_df[new_cols] = np.nan
+            for i in whole_df[key_col].unique():
+                idx = (whole_df[key_col] == i)
+                tmp = whole_df.loc[idx]
+                for c in target_cols:
+                    if len(tmp[c].dropna()) > 0:
+                        if method == "mean":
+                            agg = tmp[c].dropna().mean()
+                        elif method == "max":
+                            agg = tmp[c].dropna().max()
+                        elif method == "min":
+                            agg = tmp[c].dropna().min()
+                        whole_df.loc[idx, f"{c}_diff_{key_col}_{method}"] = whole_df.loc[idx, c] - agg
+    return whole_df, gen_cols
+
+
+def generate_groupby_ratio_features(whole_df, key_cols, methods):
+    gen_cols = []
+    target_cols = ["User_Score", "Critic_Score", "User_Count", "Critic_Count", "User_Momentum", "Critic_Momentum"]
+    for key_col in key_cols:
+        for method in methods:
+            new_cols = [f"{col}_ratio_{key_col}_{method}" for col in target_cols]
+            gen_cols.extend(new_cols)
+            whole_df[new_cols] = np.nan
+            for i in whole_df[key_col].unique():
+                idx = (whole_df[key_col] == i)
+                tmp = whole_df.loc[idx]
+                for c in target_cols:
+                    if len(tmp[c].dropna()) > 0:
+                        if method == "mean":
+                            agg = tmp[c].dropna().mean()
+                        elif method == "max":
+                            agg = tmp[c].dropna().max()
+                        elif method == "min":
+                            agg = tmp[c].dropna().min()
+                        whole_df.loc[idx, f"{c}_diff_{key_col}_{method}"] = whole_df.loc[idx, c] / agg
+    return whole_df, gen_cols
+
+
+class ScoreDiffFromGenre(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Genre"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromGenre(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Genre"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreDiffFromPublisher(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # unknown -> nan
+        whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Publisher"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromPublisher(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Publisher"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreDiffFromDeveloper(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Developer"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromDeveloper(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Developer"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreDiffFromRating(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Rating"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromRating(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Rating"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class PlatformLDA(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        gen_cols = []
+
+        # unknown -> nan
+        whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
+
+        def lda(col, n_compo):
+            from sklearn.decomposition import LatentDirichletAllocation
+            pivot = whole_df.pivot_table(index='Platform', columns=col, values='Name', aggfunc='count').fillna(0)
+            lda = LatentDirichletAllocation(n_components=n_compo)
+            transformed = lda.fit_transform(pivot)
+            transformed_df = pd.DataFrame(transformed, index=pivot.index)
+            transformed_df.columns = [f"platform_{col}_lda_{i}" for i in range(n_compo)]
+            return transformed_df.reset_index()
+
+        ret = lda("Year_of_Release", 7)
+        whole_df = whole_df.merge(ret, on="Platform", how="left")
+        gen_cols.extend([col for col in ret if "lda" in col])
+
+        ret = lda("Genre", 7)
+        whole_df = whole_df.merge(ret, on="Platform", how="left")
+        gen_cols.extend([col for col in ret if "lda" in col])
+
+        ret = lda("Publisher", 20)
+        whole_df = whole_df.merge(ret, on="Platform", how="left")
+        gen_cols.extend([col for col in ret if "lda" in col])
+
+        ret = lda("Developer", 20)
+        whole_df = whole_df.merge(ret, on="Platform", how="left")
+        gen_cols.extend([col for col in ret if "lda" in col])
+
+        ret = lda("Rating", 7)
+        whole_df = whole_df.merge(ret, on="Platform", how="left")
+        gen_cols.extend([col for col in ret if "lda" in col])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class RatingLDA(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        gen_cols = []
+
+        # unknown -> nan
+        whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
+
+        def lda(col, n_compo):
+            from sklearn.decomposition import LatentDirichletAllocation
+            pivot = whole_df.pivot_table(index='Rating', columns=col, values='Name', aggfunc='count').fillna(0)
+            lda = LatentDirichletAllocation(n_components=n_compo)
+            transformed = lda.fit_transform(pivot)
+            transformed_df = pd.DataFrame(transformed, index=pivot.index)
+            transformed_df.columns = [f"rating_{col}_lda_{i}" for i in range(n_compo)]
+            return transformed_df.reset_index()
+
+        ret = lda("Year_of_Release", 7)
+        whole_df = whole_df.merge(ret, on="Rating", how="left")
+        gen_cols.extend([col for col in ret if "lda" in col])
+
+        ret = lda("Genre", 7)
+        whole_df = whole_df.merge(ret, on="Rating", how="left")
+        gen_cols.extend([col for col in ret if "lda" in col])
+
+        ret = lda("Publisher", 20)
+        whole_df = whole_df.merge(ret, on="Rating", how="left")
+        gen_cols.extend([col for col in ret if "lda" in col])
+
+        ret = lda("Developer", 20)
+        whole_df = whole_df.merge(ret, on="Rating", how="left")
+        gen_cols.extend([col for col in ret if "lda" in col])
+
+        ret = lda("Platform", 7)
+        whole_df = whole_df.merge(ret, on="Rating", how="left")
+        gen_cols.extend([col for col in ret if "lda" in col])
 
         train, test = whole_df[:len(train)], whole_df[len(train):]
 

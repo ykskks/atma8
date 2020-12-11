@@ -26,7 +26,20 @@ class Experiment:
     def load_data(self):
         train = pd.read_csv("./data/raw/train_fixed.csv")
         X_train, X_test = load_datasets(self.features)
+
+        # exp050
+        del_cols_ad_val = [
+            "publisher_Platform_pca_0",
+            "publisher_Year_of_Release_pca_0",
+            "publisher_Genre_pca_0",
+            "publisher_Developer_lda_20_12"
+        ]
+        X_train.drop(del_cols_ad_val, axis=1, inplace=True)
+        X_test.drop(del_cols_ad_val, axis=1, inplace=True)
+
         self.logger.debug(f"feature using: {self.features}")
+        self.logger.debug(f"feature dropeed: {del_cols_ad_val}")
+
         train["Global_Sales_log1p"] = np.log1p(train["Global_Sales"])
         y_train = train["Global_Sales_log1p"].to_frame()
         groups = train["Publisher"].to_frame()
