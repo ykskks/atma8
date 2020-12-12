@@ -20,7 +20,10 @@ class FeatureGenerator:
     def __init__(self, namespace, overwrite, which):
         self.namespace = namespace
         self.overwrite = overwrite
-        self.which = which
+        # self.which = which
+        if which is None:
+            which = ""
+        self.which = which.split(",")
 
     def get_features(self):
         for k, v in self.namespace.items():
@@ -31,9 +34,9 @@ class FeatureGenerator:
         for feature in self.get_features():
             if feature.train_path.exists() and feature.test_path.exists() and not self.overwrite:
                 print(feature.name, 'was skipped.')
-            elif feature.train_path.exists() and feature.test_path.exists() and self.overwrite and self.which == feature.name:
+            elif feature.train_path.exists() and feature.test_path.exists() and self.overwrite and feature.name in self.which:
                 feature.run().save()
-            elif feature.train_path.exists() and feature.test_path.exists() and self.overwrite and self.which != feature.name:
+            elif feature.train_path.exists() and feature.test_path.exists() and self.overwrite and feature.name not in self.which:
                 print(feature.name, 'was skipped.')
             else:
                 feature.run().save()

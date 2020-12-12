@@ -1500,6 +1500,33 @@ class ScoreRatioFromYear(Feature):
         self.test = test[gen_cols]
 
 
+def generate_groupby_features(whole_df, key_cols, methods):
+    gen_cols = []
+    target_cols = ["User_Score", "Critic_Score", "User_Count", "Critic_Count", "User_Momentum", "Critic_Momentum"]
+    for key_col in key_cols:
+        for method in methods:
+            new_cols = [f"{col}_groupby_{key_col}_{method}" for col in target_cols]
+            gen_cols.extend(new_cols)
+            whole_df[new_cols] = np.nan
+            for i in whole_df[key_col].unique():
+                idx = (whole_df[key_col] == i)
+                tmp = whole_df.loc[idx]
+                for c in target_cols:
+                    if len(tmp[c].dropna()) > 0:
+                        if method == "mean":
+                            agg = tmp[c].dropna().mean()
+                        elif method == "max":
+                            agg = tmp[c].dropna().max()
+                        elif method == "min":
+                            agg = tmp[c].dropna().min()
+                        elif method == "std":
+                            agg = tmp[c].dropna().std()
+                        elif method == "sum":
+                            agg = tmp[c].dropna().sum()
+                        whole_df.loc[idx, f"{c}_groupby_{key_col}_{method}"] = agg
+    return whole_df, gen_cols
+
+
 def generate_groupby_diff_features(whole_df, key_cols, methods):
     gen_cols = []
     target_cols = ["User_Score", "Critic_Score", "User_Count", "Critic_Count", "User_Momentum", "Critic_Momentum"]
@@ -1542,8 +1569,88 @@ def generate_groupby_ratio_features(whole_df, key_cols, methods):
                             agg = tmp[c].dropna().max()
                         elif method == "min":
                             agg = tmp[c].dropna().min()
-                        whole_df.loc[idx, f"{c}_diff_{key_col}_{method}"] = whole_df.loc[idx, c] / agg
+                        whole_df.loc[idx, f"{c}_ratio_{key_col}_{method}"] = whole_df.loc[idx, c] / agg
     return whole_df, gen_cols
+
+
+class SimpleGroupby(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # unknown -> nan
+        whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+
+        whole_df["Platform_Year"] = whole_df["Platform"] + "_" + whole_df["Year_of_Release"]
+        whole_df["Platform_Genre"] = whole_df["Platform"] + "_" + whole_df["Genre"]
+        whole_df["Platform_Rating"] = whole_df["Platform"] + "_" + whole_df["Rating"]
+
+        keys = [
+            "Platform",
+            "Year_of_Release",
+            "Genre",
+            "Publisher",
+            "Developer",
+            "Rating",
+            "Platform_Year",
+            "Platform_Genre",
+            "Platform_Rating"
+        ]
+        methods = ["mean", "max", "min", "sum", "std"]
+        whole_df, gen_cols = generate_groupby_features(whole_df, keys, methods)
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class SimpleGroupby_2(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # unknown -> nan
+        # whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+
+        whole_df["Platform_Year"] = whole_df["Platform"] + "_" + whole_df["Year_of_Release"]
+        whole_df["Platform_Genre"] = whole_df["Platform"] + "_" + whole_df["Genre"]
+        whole_df["Platform_Rating"] = whole_df["Platform"] + "_" + whole_df["Rating"]
+
+        keys = [
+            "Platform",
+            "Year_of_Release",
+            "Genre",
+            # "Publisher",
+            # "Developer",
+            "Rating",
+            "Platform_Year",
+            "Platform_Genre",
+            "Platform_Rating"
+        ]
+        methods = ["mean", "max", "min", "sum", "std"]
+        whole_df, gen_cols = generate_groupby_features(whole_df, keys, methods)
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
 
 
 class ScoreDiffFromGenre(Feature):
