@@ -66,7 +66,7 @@ def careful_encode(series, encode_mode):
 
         train_agg_df = tmp.groupby('col').agg({'target': ['mean']})
         train_agg_df.columns = ["mean"]
-        test_te = test_series.apply(lambda row: train_agg_df.loc[row]["mean"] if row != "NaN" else np.nan)
+        test_te = test_series.apply(lambda row: train_agg_df.loc[row]["mean"] if (row in train_agg_df.index) and (row != "NaN") else np.nan)
         series = pd.concat([ts, test_te], axis=0)
         series[nan_idx] = np.nan
 
@@ -235,6 +235,36 @@ class Base_4(Feature):
             "Critic_Score", "Critic_Count", "User_Score", "User_Count"
         ]
 
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class TargetEncode2way(Feature):
+    def create_features(self):
+        global train, test
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Platform_Rating"] = whole_df["Platform"] + "_" + whole_df["Rating"]
+        whole_df["Platform_Genre"] = whole_df["Platform"] + "_" + whole_df["Genre"]
+        whole_df["Platform_Year"] = whole_df["Platform"] + "_" + whole_df["Year_of_Release"]
+
+        def encode_category(df):
+            df_copy = df.copy()
+            te_cols = ["Platform_Rating", "Platform_Genre", "Platform_Year"]
+
+            for col in te_cols:
+                series = df_copy[col]
+                df_copy[col + "_" + "te"] = careful_encode(series, "te")
+
+            return df_copy
+
+        whole_df = encode_category(whole_df)
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        gen_cols = ["Platform_Rating_te", "Platform_Genre_te", "Platform_Year_te"]
         self.train = train[gen_cols]
         self.test = test[gen_cols]
 
@@ -1681,6 +1711,236 @@ class ScoreRatioFromRating(Feature):
         self.test = test[gen_cols]
 
 
+class ScoreDiffFromPlatformYear(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Platform_Year"] = whole_df["Platform"] + "_" + whole_df["Year_of_Release"]
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Platform_Year"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromPlatformYear(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Platform_Year"] = whole_df["Platform"] + "_" + whole_df["Year_of_Release"]
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Platform_Year"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreDiffFromPlatformGenre(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Platform_Genre"] = whole_df["Platform"] + "_" + whole_df["Genre"]
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Platform_Genre"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromPlatformGenre(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Platform_Genre"] = whole_df["Platform"] + "_" + whole_df["Genre"]
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Platform_Genre"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreDiffFromPlatformRating(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Platform_Rating"] = whole_df["Platform"] + "_" + whole_df["Rating"]
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Platform_Rating"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromPlatformRating(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Platform_Rating"] = whole_df["Platform"] + "_" + whole_df["Rating"]
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Platform_Rating"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreDiffFromGenreRating(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Genre_Rating"] = whole_df["Genre"] + "_" + whole_df["Rating"]
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Genre_Rating"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromGenreRating(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Genre_Rating"] = whole_df["Genre"] + "_" + whole_df["Rating"]
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Genre_Rating"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreDiffFromPlatformGenreRating(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Platform_Genre_Rating"] = whole_df["Platform"] + "_" + whole_df["Genre"] + "_" + whole_df["Rating"]
+
+        whole_df, gen_cols = generate_groupby_diff_features(whole_df, ["Platform_Genre_Rating"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class ScoreRatioFromPlatformGenreRating(Feature):
+    def create_features(self):
+        global train, test
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["User_Score"] = whole_df["User_Score"].replace("tbd", np.nan)
+        whole_df["User_Score"] = whole_df["User_Score"].astype(float)
+        whole_df["Critic_Momentum"] = whole_df["Critic_Score"] * whole_df["Critic_Count"]
+        whole_df["User_Momentum"] = whole_df["User_Score"] * whole_df["User_Count"]
+
+        # whole_df["Year_of_Release"] = whole_df["Year_of_Release"].apply(lambda x: str(x) if not pd.isnull(x) else np.nan)
+        whole_df["Platform_Genre_Rating"] = whole_df["Platform"] + "_" + whole_df["Genre"] + "_" + whole_df["Rating"]
+
+        whole_df, gen_cols = generate_groupby_ratio_features(whole_df, ["Platform_Genre_Rating"], ["mean", "max", "min"])
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 class PlatformLDA(Feature):
     def create_features(self):
         global train, test
@@ -1817,6 +2077,113 @@ class NonEnglishWords(Feature):
         whole_df["dev_non_english"] = devs.map(contains_non_english).astype(float)
 
         gen_cols = ["name_non_english", "pub_non_english", "dev_non_english"]
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class NonEnglishWords_2(Feature):
+    def create_features(self):
+        global train, test
+
+        import texthero as hero
+        from texthero import preprocessing
+        from nltk.corpus import words, brown
+        import nltk
+        nltk.download('brown')
+        nltk.download('words')
+
+        words_vocab = set(words.words())
+        brown_vocab = set(brown.words())
+        vocab = words_vocab.union(brown_vocab)
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        custom_pipeline = [preprocessing.fillna
+                        , preprocessing.lowercase
+                        , preprocessing.remove_digits
+                        , preprocessing.remove_punctuation
+                        , preprocessing.remove_diacritics
+                        , preprocessing.remove_whitespace
+                        , preprocessing.remove_stopwords
+                        ]
+
+        names = hero.clean(whole_df['Name'], custom_pipeline)
+        pubs = hero.clean(whole_df['Publisher'], custom_pipeline)
+        # devs = hero.clean(whole_df['Developer'], custom_pipeline)
+
+        def contains_non_english(name):
+            # ratio of english words >= 50% ===> False
+            ws = name.split()
+            evals = [w in vocab for w in ws]
+            if len(evals) == 0:
+                return np.nan
+            english_greater_or_equal_50 = sum(evals)/len(evals) >= 0.5
+            return not english_greater_or_equal_50
+
+        whole_df["name_non_english"] = names.map(contains_non_english)
+        whole_df["pub_non_english"] = pubs.map(contains_non_english)
+        whole_df["name_and_pub_non_english"] = (whole_df["name_non_english"] & whole_df["pub_non_english"]).astype(float)
+        # whole_df["dev_non_english"] = devs.map(contains_non_english).astype(float)
+
+        gen_cols = ["name_and_pub_non_english"]
+
+        train, test = whole_df[:len(train)], whole_df[len(train):]
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
+class NonEnglishWords_3(Feature):
+    def create_features(self):
+        global train, test
+
+        import texthero as hero
+        from texthero import preprocessing
+        from nltk.corpus import words, brown
+        import nltk
+        nltk.download('brown')
+        nltk.download('words')
+
+        words_vocab = set(words.words())
+        brown_vocab = set(brown.words())
+        vocab = words_vocab.union(brown_vocab)
+
+        # gen_cols = []
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+
+        custom_pipeline = [preprocessing.fillna
+                        , preprocessing.lowercase
+                        , preprocessing.remove_digits
+                        , preprocessing.remove_punctuation
+                        , preprocessing.remove_diacritics
+                        , preprocessing.remove_whitespace
+                        , preprocessing.remove_stopwords
+                        ]
+
+        names = hero.clean(whole_df['Name'], custom_pipeline)
+        pubs = hero.clean(whole_df['Publisher'], custom_pipeline)
+        # devs = hero.clean(whole_df['Developer'], custom_pipeline)
+
+        def contains_non_english(name):
+            # ratio of english words >= 50% ===> False
+            ws = name.split()
+            evals = [w in vocab for w in ws]
+            if len(evals) == 0:
+                return np.nan
+            return not all(evals)
+
+        whole_df["name_non_english"] = names.map(contains_non_english)
+        whole_df["pub_non_english"] = pubs.map(contains_non_english)
+        whole_df["name_and_pub_non_english"] = (whole_df["name_non_english"] & whole_df["pub_non_english"]).astype(float)
+        # whole_df["dev_non_english"] = devs.map(contains_non_english).astype(float)
+
+        gen_cols = ["name_and_pub_non_english"]
 
         train, test = whole_df[:len(train)], whole_df[len(train):]
 
