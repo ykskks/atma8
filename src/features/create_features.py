@@ -2298,6 +2298,23 @@ class NonEnglishWords_3(Feature):
         self.test = test[gen_cols]
 
 
+class RegionSalesOof(Feature):
+    def create_features(self):
+        global train, test
+
+        gen_cols = ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"]
+        for c in gen_cols:
+            with open(f'./data/features/oof_{c}.pickle', mode='rb') as f:
+                oof = pickle.load(f)
+            with open(f'./data/features/predictions_{c}.pickle', mode='rb') as f:
+                preds = pickle.load(f)
+            train[c] = oof
+            test[c] = preds
+
+        self.train = train[gen_cols]
+        self.test = test[gen_cols]
+
+
 if __name__ == '__main__':
     # TRAIN_PATH = Path("./data/raw/train_fixed.csv")
     # TEST_PATH = Path("./data/raw/test_fixed.csv")

@@ -1,0 +1,145 @@
+logs/exp061.log
+feature using: ['Base_6', 'BertPCA50', 'Momentum', 'Interaction', 'SimultaneousPlatformCount', 'PublisherPCA', 'DeveloperPCA', 'Series', 'NumSeries', 'NumSeriesNormalized', 'SeriesLifespan', 'PublisherDeveloperLDA', 'DeveloperPublisherLDA', 'ScoreDiffFromPlatform', 'ScoreRatioFromPlatform', 'ScoreDiffFromYear', 'ScoreRatioFromYear', 'ScoreDiffFromGenre', 'ScoreRatioFromGenre', 'ScoreDiffFromPublisher', 'ScoreRatioFromPublisher', 'ScoreDiffFromDeveloper', 'ScoreRatioFromDeveloper', 'ScoreDiffFromRating', 'ScoreRatioFromRating', 'SeriesOrder', 'PlatformLDA', 'ScoreDiffFromPlatformYear', 'ScoreRatioFromPlatformYear', 'ScoreDiffFromPlatformGenre', 'ScoreRatioFromPlatformGenre', 'ScoreDiffFromPlatformRating', 'ScoreRatioFromPlatformRating', 'SimpleGroupby', 'RegionSalesOof']
+----------------------------------------------------------------------------------------------------
+Fold 1
+[100]	training's rmse: 1.00522	valid_1's rmse: 0.938342
+[200]	training's rmse: 0.882632	valid_1's rmse: 0.901566
+[300]	training's rmse: 0.832067	valid_1's rmse: 0.899694
+----------------------------------------------------------------------------------------------------
+Fold 2
+[100]	training's rmse: 0.952929	valid_1's rmse: 1.63984
+[200]	training's rmse: 0.845886	valid_1's rmse: 1.50325
+[300]	training's rmse: 0.800992	valid_1's rmse: 1.45004
+[400]	training's rmse: 0.77535	valid_1's rmse: 1.43131
+[500]	training's rmse: 0.755834	valid_1's rmse: 1.42233
+[600]	training's rmse: 0.740289	valid_1's rmse: 1.41544
+[700]	training's rmse: 0.726207	valid_1's rmse: 1.41338
+[800]	training's rmse: 0.71252	valid_1's rmse: 1.40688
+----------------------------------------------------------------------------------------------------
+Fold 3
+[100]	training's rmse: 0.99013	valid_1's rmse: 1.08912
+[200]	training's rmse: 0.869507	valid_1's rmse: 1.02132
+[300]	training's rmse: 0.819622	valid_1's rmse: 1.00731
+[400]	training's rmse: 0.79045	valid_1's rmse: 1.00263
+[500]	training's rmse: 0.770044	valid_1's rmse: 1.00069
+[600]	training's rmse: 0.753029	valid_1's rmse: 1.00011
+[700]	training's rmse: 0.738392	valid_1's rmse: 1.00184
+----------------------------------------------------------------------------------------------------
+Fold 4
+[100]	training's rmse: 0.995318	valid_1's rmse: 1.05082
+[200]	training's rmse: 0.872027	valid_1's rmse: 1.01549
+[300]	training's rmse: 0.822746	valid_1's rmse: 1.00533
+[400]	training's rmse: 0.793527	valid_1's rmse: 1.00303
+[500]	training's rmse: 0.773654	valid_1's rmse: 1.00279
+----------------------------------------------------------------------------------------------------
+Fold 5
+[100]	training's rmse: 1.00488	valid_1's rmse: 1.00383
+[200]	training's rmse: 0.889818	valid_1's rmse: 0.865177
+[300]	training's rmse: 0.841177	valid_1's rmse: 0.823964
+[400]	training's rmse: 0.811326	valid_1's rmse: 0.811556
+[500]	training's rmse: 0.791573	valid_1's rmse: 0.808501
+[600]	training's rmse: 0.774742	valid_1's rmse: 0.806234
+[700]	training's rmse: 0.760655	valid_1's rmse: 0.804263
+[800]	training's rmse: 0.746218	valid_1's rmse: 0.803594
+[900]	training's rmse: 0.733285	valid_1's rmse: 0.803207
+----------------------------------------------------------------------------------------------------
+Fold 6
+[100]	training's rmse: 0.998602	valid_1's rmse: 1.00601
+[200]	training's rmse: 0.87933	valid_1's rmse: 0.974258
+[300]	training's rmse: 0.829194	valid_1's rmse: 0.976345
+----------------------------------------------------------------------------------------------------
+Fold 7
+[100]	training's rmse: 1.00666	valid_1's rmse: 0.993168
+[200]	training's rmse: 0.889299	valid_1's rmse: 0.904935
+[300]	training's rmse: 0.838408	valid_1's rmse: 0.874622
+[400]	training's rmse: 0.809696	valid_1's rmse: 0.863256
+[500]	training's rmse: 0.789599	valid_1's rmse: 0.859214
+[600]	training's rmse: 0.773416	valid_1's rmse: 0.856988
+[700]	training's rmse: 0.758514	valid_1's rmse: 0.857043
+[800]	training's rmse: 0.745086	valid_1's rmse: 0.855323
+[900]	training's rmse: 0.731732	valid_1's rmse: 0.855155
+----------------------------------------------------------------------------------------------------
+Fold 8
+[100]	training's rmse: 1.00067	valid_1's rmse: 1.0841
+[200]	training's rmse: 0.881391	valid_1's rmse: 1.00878
+[300]	training's rmse: 0.832739	valid_1's rmse: 0.99535
+[400]	training's rmse: 0.803665	valid_1's rmse: 0.994354
+[500]	training's rmse: 0.784175	valid_1's rmse: 0.995525
+----------------------------------------------------------------------------------------------------
+Fold 9
+[100]	training's rmse: 1.01158	valid_1's rmse: 0.937778
+[200]	training's rmse: 0.892773	valid_1's rmse: 0.836769
+[300]	training's rmse: 0.84282	valid_1's rmse: 0.810296
+[400]	training's rmse: 0.815093	valid_1's rmse: 0.802402
+[500]	training's rmse: 0.795018	valid_1's rmse: 0.800427
+----------------------------------------------------------------------------------------------------
+Fold 10
+[100]	training's rmse: 0.997557	valid_1's rmse: 1.08599
+[200]	training's rmse: 0.878768	valid_1's rmse: 1.07292
+[300]	training's rmse: 0.829813	valid_1's rmse: 1.06652
+[400]	training's rmse: 0.802203	valid_1's rmse: 1.05887
+[500]	training's rmse: 0.782509	valid_1's rmse: 1.05221
+[600]	training's rmse: 0.766433	valid_1's rmse: 1.04645
+[700]	training's rmse: 0.751976	valid_1's rmse: 1.04263
+[800]	training's rmse: 0.73906	valid_1's rmse: 1.03954
+[900]	training's rmse: 0.725786	valid_1's rmse: 1.03725
+[1000]	training's rmse: 0.714759	valid_1's rmse: 1.03518
+[1100]	training's rmse: 0.703544	valid_1's rmse: 1.03378
+[1200]	training's rmse: 0.691467	valid_1's rmse: 1.03264
+[1300]	training's rmse: 0.680495	valid_1's rmse: 1.03157
+[1400]	training's rmse: 0.670635	valid_1's rmse: 1.02942
+[1500]	training's rmse: 0.660811	valid_1's rmse: 1.02977
+##### feature importance #####
+                                            importance
+feature                                               
+NA_Sales                                  79154.888174
+EU_Sales                                  47171.523304
+Other_Sales                               32208.235880
+Critic_Count_groupby_Publisher_max         6891.883605
+User_Count_groupby_Publisher_max           6130.298702
+User_Momentum_groupby_Publisher_max        4526.727583
+JP_Sales                                   3759.872085
+publisher_Platform_pca_1                   3726.538202
+Year_of_Release                            3551.807987
+publisher_Platform_pca_4                   3441.585476
+num_series_norm                            3181.795067
+pub_bert_pca_22                            3107.732655
+User_Count_diff_Platform_Rating_mean       2898.637761
+Critic_Momentum_groupby_Publisher_std      2796.065831
+User_Count_ratio_Platform_mean             2709.595104
+num_series                                 2625.050804
+User_Count_ratio_Platform_Rating_mean      2540.439322
+Critic_Count_groupby_Publisher_std         2525.825565
+publisher_Rating_pca_1                     2081.341431
+User_Momentum_ratio_Platform_mean          2080.764028
+publisher_Rating_pca_3                     2050.476453
+User_Momentum_ratio_Platform_Rating_min    1992.378851
+User_Count_diff_Platform_Genre_mean        1916.537093
+Critic_Momentum_groupby_Publisher_max      1904.931050
+User_Count_groupby_Publisher_std           1776.117125
+pub_bert_pca_13                            1613.846575
+platform_Publisher_lda_12                  1555.687711
+series_lifespan                            1526.059408
+User_Momentum_groupby_Publisher_sum        1495.948459
+Critic_Momentum_groupby_Publisher_sum      1493.665341
+platform_Publisher_lda_10                  1409.884358
+platform_Rating_lda_2                      1347.402769
+User_Momentum_ratio_Platform_Genre_mean    1339.409485
+Critic_Score_groupby_Publisher_max         1304.396665
+User_Count_groupby_Year_of_Release_sum     1202.537858
+name_bert_pca_17                           1182.270039
+User_Count_groupby_Publisher_sum           1173.780913
+User_Count_ratio_Platform_Genre_mean       1164.099435
+User_Momentum_groupby_Publisher_std        1131.020218
+publisher_Platform_pca_2                   1084.862332
+publisher_Genre_pca_3                      1066.015262
+Critic_Momentum_groupby_Publisher_mean     1025.561070
+publisher_Rating_pca_5                     1003.514154
+pub_bert_pca_41                            1001.857339
+User_Count_diff_Platform_mean               987.436069
+platform_Developer_lda_17                   986.915580
+Critic_Count_groupby_Platform_mean          969.880622
+User_Momentum_ratio_Platform_Rating_mean    939.401636
+User_Momentum_groupby_Platform_Genre_min    936.527680
+Critic_Count_groupby_Year_of_Release_max    935.152651
+cv_score_fold_mean: 0.9758924676596132
