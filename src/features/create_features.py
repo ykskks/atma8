@@ -2298,21 +2298,103 @@ class NonEnglishWords_3(Feature):
         self.test = test[gen_cols]
 
 
-class RegionSalesOof(Feature):
+# class RegionSalesOof(Feature):
+#     def create_features(self):
+#         global train, test
+
+#         gen_cols = ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"]
+#         for c in gen_cols:
+#             with open(f'./data/features/oof_{c}.pickle', mode='rb') as f:
+#                 oof = pickle.load(f)
+#             with open(f'./data/features/predictions_{c}.pickle', mode='rb') as f:
+#                 preds = pickle.load(f)
+#             train[c] = oof
+#             test[c] = preds
+
+#         self.train = train[gen_cols]
+#         self.test = test[gen_cols]
+
+
+class Lead(Feature):
     def create_features(self):
         global train, test
 
-        gen_cols = ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"]
-        for c in gen_cols:
-            with open(f'./data/features/oof_{c}.pickle', mode='rb') as f:
-                oof = pickle.load(f)
-            with open(f'./data/features/predictions_{c}.pickle', mode='rb') as f:
-                preds = pickle.load(f)
-            train[c] = oof
-            test[c] = preds
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["Publisher"].fillna("unknown", inplace=True)
+        whole_df["Genre"].fillna("unknown", inplace=True)
+        whole_df["Publisher_Genre"] = whole_df["Publisher"] + "_" + whole_df["Genre"]
+        whole_df["Publisher_Platform"] = whole_df["Publisher"] + "_" + whole_df["Platform"]
+        whole_df["Platform_Genre"] = whole_df["Platform"] + "_" + whole_df["Genre"]
 
-        self.train = train[gen_cols]
-        self.test = test[gen_cols]
+        def lead_features(df, key_col, shift):
+            new_feature = df.groupby(key_col)["Year_of_Release"].transform(lambda df: df.shift(shift)).to_frame()
+            new_feature.columns = [f"{key_col}_year_lead_{shift}"]
+            return new_feature
+
+        new_features = []
+        gen_cols = []
+        key_cols = ["Publisher", "Publisher_Genre", "Publisher_Platform", "Platform_Genre"]
+        shifts = [1, 2, 3]
+        for col in key_cols:
+            for shift in shifts:
+                new_feature = lead_features(whole_df, col, shift)
+                new_features.append(new_feature)
+                gen_cols.extend(new_feature.columns.tolist())
+
+        new_features_df = pd.concat(new_features, axis=1)
+
+        for col in gen_cols:
+            new_features_df[f"year_diff_{col}"] = whole_df["Year_of_Release"] - new_features_df[col]
+            # gen_cols.append(f"year_diff_{col}")
+
+        new_features_train = new_features_df[:len(train)]
+        new_features_test = new_features_df[len(train):]
+
+        print(new_features_df.columns)
+
+        self.train = new_features_train
+        self.test = new_features_test
+
+
+class Lag(Feature):
+    def create_features(self):
+        global train, test
+
+        whole_df = pd.concat([train, test], ignore_index=True)
+        whole_df["Publisher"].fillna("unknown", inplace=True)
+        whole_df["Genre"].fillna("unknown", inplace=True)
+        whole_df["Publisher_Genre"] = whole_df["Publisher"] + "_" + whole_df["Genre"]
+        whole_df["Publisher_Platform"] = whole_df["Publisher"] + "_" + whole_df["Platform"]
+        whole_df["Platform_Genre"] = whole_df["Platform"] + "_" + whole_df["Genre"]
+
+        def lag_features(df, key_col, shift):
+            new_feature = df.groupby(key_col)["Year_of_Release"].transform(lambda df: df.shift(-shift)).to_frame()
+            new_feature.columns = [f"{key_col}_year_lag_{shift}"]
+            return new_feature
+
+        new_features = []
+        gen_cols = []
+        key_cols = ["Publisher", "Publisher_Genre", "Publisher_Platform", "Platform_Genre"]
+        shifts = [1, 2, 3]
+        for col in key_cols:
+            for shift in shifts:
+                new_feature = lag_features(whole_df, col, shift)
+                new_features.append(new_feature)
+                gen_cols.extend(new_feature.columns.tolist())
+
+        new_features_df = pd.concat(new_features, axis=1)
+
+        for col in gen_cols:
+            new_features_df[f"year_diff_{col}"] = whole_df["Year_of_Release"] - new_features_df[col]
+            # gen_cols.append(f"year_diff_{col}")
+
+        new_features_train = new_features_df[:len(train)]
+        new_features_test = new_features_df[len(train):]
+
+        print(new_features_df.columns)
+
+        self.train = new_features_train
+        self.test = new_features_test
 
 
 if __name__ == '__main__':

@@ -59,8 +59,8 @@ class Experiment:
         feature_importance_df = pd.DataFrame()
         fold_scores = []
 
-        for fold, (train_idx, val_idx) in enumerate(folds.split(X_train, groups=groups)):
-        # for fold, (train_idx, val_idx) in enumerate(folds.split(X_train, y_to_stratify)):
+        # for fold, (train_idx, val_idx) in enumerate(folds.split(X_train, groups=groups)):
+        for fold, (train_idx, val_idx) in enumerate(folds.split(X_train, y_to_stratify)):
             self.logger.debug("-" * 100)
             self.logger.debug(f"Fold {fold+1}")
             train_data = lgb.Dataset(X_train.iloc[train_idx], label=y_train.iloc[train_idx])
