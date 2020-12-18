@@ -30,6 +30,8 @@ from base import get_arguments, FeatureGenerator, Feature
 
 Feature.base_dir = './data/features'
 
+# https://amalog.hateblo.jp/entry/kaggle-feature-managementを参考にしています
+
 
 def careful_encode(series, encode_mode):
     series = series.copy()

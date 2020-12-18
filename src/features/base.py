@@ -8,6 +8,8 @@ import feather
 
 from utils import timer
 
+# https://amalog.hateblo.jp/entry/kaggle-feature-managementを参考にしています
+
 
 def get_arguments():
     parser = argparse.ArgumentParser()
