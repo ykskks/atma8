@@ -6,11 +6,22 @@ import pickle
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
+import scipy.stats
 import feather
 from sklearn.preprocessing import LabelEncoder
+from sklearn.decomposition import PCA, LatentDirichletAllocation
+from sklearn.model_selection import GroupKFold
+from sklearn.manifold import TSNE
 import transformers
 from transformers import BertTokenizer
 import torch
+import texthero as hero
+from texthero import preprocessing
+from nltk.corpus import words, brown
+from nltk.util import ngrams
+import nltk
+nltk.download('brown')
+nltk.download('words')
 tqdm.pandas()
 
 sys.path.append('.')
@@ -50,7 +61,6 @@ def careful_encode(series, encode_mode):
     elif encode_mode == "te":
         nan_idx = series.isnull()
         series.fillna("NaN", inplace=True)
-        from sklearn.model_selection import GroupKFold
         folds = GroupKFold(n_splits=5)
         groups = train["Publisher"].to_frame()
         tmp = pd.concat([train_series, target], axis=1)
@@ -721,7 +731,6 @@ class PublisherPCA(Feature):
         whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
 
         def pca(col):
-            from sklearn.decomposition import PCA
             pivot = whole_df.pivot_table(index='Publisher', columns=col, values='Name', aggfunc='count').fillna(0)
             pca = PCA(n_components=7)
             transformed = pca.fit_transform(pivot)
@@ -749,7 +758,6 @@ class DeveloperPCA(Feature):
         gen_cols = []
 
         def pca(col):
-            from sklearn.decomposition import PCA
             pivot = whole_df.pivot_table(index='Developer', columns=col, values='Name', aggfunc='count').fillna(0)
             pca = PCA(n_components=7)
             transformed = pca.fit_transform(pivot)
@@ -780,7 +788,6 @@ class PublisherLDA(Feature):
         whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
 
         def lda(col):
-            from sklearn.decomposition import LatentDirichletAllocation
             pivot = whole_df.pivot_table(index='Publisher', columns=col, values='Name', aggfunc='count').fillna(0)
             lda = LatentDirichletAllocation(n_components=7)
             transformed = lda.fit_transform(pivot)
@@ -811,7 +818,6 @@ class PublisherDeveloperLDA(Feature):
         whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
 
         def lda(col, n_components):
-            from sklearn.decomposition import LatentDirichletAllocation
             pivot = whole_df.pivot_table(index='Publisher', columns=col, values='Name', aggfunc='count').fillna(0)
             lda = LatentDirichletAllocation(n_components=n_components)
             transformed = lda.fit_transform(pivot)
@@ -844,7 +850,6 @@ class DeveloperPublisherLDA(Feature):
         whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
 
         def lda(col, n_components):
-            from sklearn.decomposition import LatentDirichletAllocation
             pivot = whole_df.pivot_table(index='Developer', columns=col, values='Name', aggfunc='count').fillna(0)
             lda = LatentDirichletAllocation(n_components=n_components)
             transformed = lda.fit_transform(pivot)
@@ -874,7 +879,6 @@ class DeveloperLDA(Feature):
         gen_cols = []
 
         def lda(col):
-            from sklearn.decomposition import LatentDirichletAllocation
             pivot = whole_df.pivot_table(index='Developer', columns=col, values='Name', aggfunc='count').fillna(0)
             lda = LatentDirichletAllocation(n_components=7)
             transformed = lda.fit_transform(pivot)
@@ -930,7 +934,6 @@ class BertPCA(Feature):
         dev_bert.columns = [f"dev_bert_{i}" for i in range(768)]
 
         def pca(x, col_name):
-            from sklearn.decomposition import PCA
             pca = PCA(n_components=30)
             nonnull_idx = (x.isnull().sum(axis=1) == 0)
             transformed = pca.fit_transform(x.loc[nonnull_idx])
@@ -998,7 +1001,6 @@ class BertPCA50(Feature):
         pub_bert.loc[pub_unknown_idx] = np.nan
 
         def pca(x, col_name):
-            from sklearn.decomposition import PCA
             pca = PCA(n_components=50)
             nonnull_idx = (x.isnull().sum(axis=1) == 0)
             transformed = pca.fit_transform(x.loc[nonnull_idx])
@@ -1062,8 +1064,6 @@ class BertTSNE(Feature):
         dev_bert.columns = [f"dev_bert_{i}" for i in range(768)]
 
         def tsne(x, col_name):
-            from sklearn.decomposition import PCA
-            from sklearn.manifold import TSNE
             pca = PCA(n_components=50)
             tsne = TSNE(n_components=3, perplexity=10, random_state=42)
             nonnull_idx = (x.isnull().sum(axis=1) == 0)
@@ -1096,10 +1096,6 @@ class BertTSNE(Feature):
 class Series(Feature):
     def create_features(self):
         global train, test
-
-        import texthero as hero
-        from texthero import preprocessing
-        from nltk.util import ngrams
 
         gen_cols = []
 
@@ -1138,10 +1134,6 @@ class Series(Feature):
 class NumSeries(Feature):
     def create_features(self):
         global train, test
-
-        import texthero as hero
-        from texthero import preprocessing
-        from nltk.util import ngrams
 
         gen_cols = []
 
@@ -1185,10 +1177,6 @@ class NumSeriesNormalized(Feature):
     def create_features(self):
         global train, test
 
-        import texthero as hero
-        from texthero import preprocessing
-        from nltk.util import ngrams
-
         gen_cols = []
 
         whole_df = pd.concat([train, test], ignore_index=True)
@@ -1208,7 +1196,6 @@ class NumSeriesNormalized(Feature):
             return list(ngrams(words, 2)) + list(ngrams(words, 3))
 
         # https://stackoverflow.com/questions/15450192/fastest-way-to-compute-entropy-in-python
-        import scipy.stats
 
         def ent(data):
             """Calculates entropy of the passed `pd.Series`
@@ -1241,10 +1228,6 @@ class NumSeriesNormalized(Feature):
 class SeriesLifespan(Feature):
     def create_features(self):
         global train, test
-
-        import texthero as hero
-        from texthero import preprocessing
-        from nltk.util import ngrams
 
         gen_cols = []
 
@@ -1290,10 +1273,6 @@ class SeriesOrder(Feature):
     def create_features(self):
         global train, test
 
-        import texthero as hero
-        from texthero import preprocessing
-        from nltk.util import ngrams
-
         gen_cols = []
 
         whole_df = pd.concat([train, test], ignore_index=True)
@@ -1336,10 +1315,6 @@ class SeriesOrder(Feature):
 class SeriesRelative(Feature):
     def create_features(self):
         global train, test
-
-        import texthero as hero
-        from texthero import preprocessing
-        from nltk.util import ngrams
 
         gen_cols = []
 
@@ -2059,7 +2034,6 @@ class PlatformLDA(Feature):
         whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
 
         def lda(col, n_compo):
-            from sklearn.decomposition import LatentDirichletAllocation
             pivot = whole_df.pivot_table(index='Platform', columns=col, values='Name', aggfunc='count').fillna(0)
             lda = LatentDirichletAllocation(n_components=n_compo)
             transformed = lda.fit_transform(pivot)
@@ -2104,7 +2078,6 @@ class RatingLDA(Feature):
         whole_df["Publisher"] = whole_df["Publisher"].replace("unknown", np.nan)
 
         def lda(col, n_compo):
-            from sklearn.decomposition import LatentDirichletAllocation
             pivot = whole_df.pivot_table(index='Rating', columns=col, values='Name', aggfunc='count').fillna(0)
             lda = LatentDirichletAllocation(n_components=n_compo)
             transformed = lda.fit_transform(pivot)
@@ -2141,13 +2114,6 @@ class RatingLDA(Feature):
 class NonEnglishWords(Feature):
     def create_features(self):
         global train, test
-
-        import texthero as hero
-        from texthero import preprocessing
-        from nltk.corpus import words, brown
-        import nltk
-        nltk.download('brown')
-        nltk.download('words')
 
         words_vocab = set(words.words())
         brown_vocab = set(brown.words())
@@ -2195,13 +2161,6 @@ class NonEnglishWords_2(Feature):
     def create_features(self):
         global train, test
 
-        import texthero as hero
-        from texthero import preprocessing
-        from nltk.corpus import words, brown
-        import nltk
-        nltk.download('brown')
-        nltk.download('words')
-
         words_vocab = set(words.words())
         brown_vocab = set(brown.words())
         vocab = words_vocab.union(brown_vocab)
@@ -2248,13 +2207,6 @@ class NonEnglishWords_2(Feature):
 class NonEnglishWords_3(Feature):
     def create_features(self):
         global train, test
-
-        import texthero as hero
-        from texthero import preprocessing
-        from nltk.corpus import words, brown
-        import nltk
-        nltk.download('brown')
-        nltk.download('words')
 
         words_vocab = set(words.words())
         brown_vocab = set(brown.words())
